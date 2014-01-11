@@ -3,7 +3,7 @@
 var PassThrough = require('stream').PassThrough,
     should = require('should'),
     sinon = require('sinon'),
-    es = require('event-stream'),
+    map = require('map-stream'),
     gutil = require('gulp-util');
 
 var cache = require('../index');
@@ -21,7 +21,7 @@ describe('gulp-cache', function () {
             
             cb(null, file);
         }),
-        fakeTask = es.map(fakeFileHandler);
+        fakeTask = map(fakeFileHandler);
 
         cache.fileCache.clear('test', done);
     });

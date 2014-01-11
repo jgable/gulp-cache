@@ -1,7 +1,7 @@
 'use strict';
 
 var _ = require('lodash-node'),
-    es = require('event-stream'),
+    map = require('map-stream'),
     PluginError = require('gulp-util').PluginError,
     Cache = require('cache-swap'),
     TaskProxy = require('./lib/TaskProxy');
@@ -36,7 +36,7 @@ var cacheTask = {
         }
 
         // Pass through the file and cb to _processFile along with the opts
-        return es.map(function (file, cb) {
+        return map(function (file, cb) {
             var taskProxy = new TaskProxy({
                 name: name,
                 file: file,
