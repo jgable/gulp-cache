@@ -23,9 +23,7 @@ describe('gulp-cache', function () {
         }),
         fakeTask = es.map(fakeFileHandler);
 
-        cache.fileCache.clear('test', function (err) {
-            done(err);
-        });
+        cache.fileCache.clear('test', done);
     });
 
     describe('in streaming mode', function () {

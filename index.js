@@ -19,6 +19,12 @@ var defaultOptions = {
 
 var cacheTask = {
     proxy: function (name, opts) {
+        // Check if name was not passed, use default
+        if (_.isObject(name)) {
+            opts = name;
+            name = 'default';
+        }
+
         var self = this;
 
         // Make sure we have some sane defaults
@@ -37,7 +43,11 @@ var cacheTask = {
                 opts: opts
             });
 
-            return taskProxy.processFile(cb);
+            taskProxy.processFile().then(function (result) {
+                cb(null, result);
+            }).catch(function (err) {
+                cb(new PluginError('gulp-cache', 'Error proxying task ' + self.name + ': ' + err.message));
+            });
         });
     }
 };
