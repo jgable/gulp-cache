@@ -1,7 +1,7 @@
-gulp-cache
+gulp-cache  ![status](https://secure.travis-ci.org/jgable/gulp-cache.png?branch=master)
 ==========
 
-A cache proxy task for Gulp.
+A temp file based caching proxy task for Gulp.
 
 ### Example
 
