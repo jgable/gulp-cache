@@ -46,7 +46,7 @@ var cacheTask = {
             taskProxy.processFile().then(function (result) {
                 cb(null, result);
             }).catch(function (err) {
-                cb(new PluginError('gulp-cache', 'Error proxying task ' + self.name + ': ' + err.message));
+                cb(new PluginError('gulp-cache', err));
             });
         });
     }
