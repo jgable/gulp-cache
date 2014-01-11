@@ -1,6 +1,6 @@
 {
   "name": "gulp-cache",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A cache proxy task for Gulp",
   "main": "index.js",
   "scripts": {
