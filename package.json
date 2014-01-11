@@ -1,0 +1,33 @@
+{
+  "name": "gulp-cache",
+  "version": "0.0.1",
+  "description": "A cache proxy task for Gulp",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/jshint/bin/jshint **/*.js && ./node_modules/mocha/bin/mocha -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jgable/gulp-cache.git"
+  },
+  "keywords": [
+    "gulpplugin"
+  ],
+  "author": "Jacob Gable <jacob.gable@gmail.com> (http://jacobgable.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jgable/gulp-cache/issues"
+  },
+  "devDependencies": {
+    "should": "~2.1.1",
+    "mocha": "~1.17.0",
+    "jshint": "~2.4.1",
+    "sinon": "~1.7.3"
+  },
+  "dependencies": {
+    "gulp-util": "~2.2.9",
+    "cache-swap": "0.0.5",
+    "lodash-node": "~2.4.1",
+    "event-stream": "~3.1.0"
+  }
+}
