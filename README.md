@@ -8,7 +8,8 @@ A temp file based caching proxy task for Gulp.
 ```javascript
 gulp.task('lint', function() {
   gulp.src('./lib/*.js')
-    .pipe(cache.proxy(jshint(".jshintrc"), {
+    .pipe(cache.proxy({
+      task: jshint('.jshintrc'),
       key: makeHashKey,
       success: function (jshintedFile) {
         return jshintedFile.jshint.success;
