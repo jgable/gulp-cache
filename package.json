@@ -1,10 +1,11 @@
 {
   "name": "gulp-cache",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "description": "A cache proxy task for Gulp",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/jshint/bin/jshint **/*.js && ./node_modules/mocha/bin/mocha -R spec"
+    "test": "./node_modules/jshint/bin/jshint **/*.js && ./node_modules/mocha/bin/mocha -R spec",
+    "coverage": "./node_modules/jshint/bin/jshint **/*.js && ./node_modules/mocha/bin/mocha --require blanket -R html-cov > coverage.html && open coverage.html"
   },
   "repository": {
     "type": "git",
@@ -30,5 +31,11 @@
     "lodash-node": "~2.4.1",
     "bluebird": "~0.11.6-0",
     "map-stream": "~0.1.0"
+  },
+  "config": {
+    "blanket": {
+      "pattern": ["index.js", "/lib/TaskProxy.js"],
+      "data-cover-never": "node_modules"
+    }
   }
 }

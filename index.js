@@ -12,44 +12,50 @@ var fileCache = new Cache({
 
 var defaultOptions = {
     fileCache: fileCache,
-    key: _.noop,
-    success: _.noop,
-    value: _.noop
+    name: 'default',
+    key: function (file) {
+        if (file.isBuffer()) {
+            return file.contents.toString('utf8');
+        }
+
+        return undefined;
+    },
+    success: true,
+    value: 'contents'
 };
 
-var cacheTask = {
-    proxy: function (name, opts) {
-        // Check if name was not passed, use default
-        if (_.isObject(name)) {
-            opts = name;
-            name = 'default';
-        }
+var cacheTask = function (task, opts) {
+    var self = this;
 
-        var self = this;
-
-        // Make sure we have some sane defaults
-        opts = _.defaults(opts || {}, defaultOptions);
-        
-        // Check for required task option
-        if (!opts.task) {
-            throw new PluginError('gulp-cache', 'Must pass a task to ' + name + ' cache.proxy');
-        }
-
-        // Pass through the file and cb to _processFile along with the opts
-        return map(function (file, cb) {
-            var taskProxy = new TaskProxy({
-                name: name,
-                file: file,
-                opts: opts
-            });
-
-            taskProxy.processFile().then(function (result) {
-                cb(null, result);
-            }).catch(function (err) {
-                cb(new PluginError('gulp-cache', err));
-            });
-        });
+    // Check for required task option
+    if (!task) {
+        throw new PluginError('gulp-cache', 'Must pass a task to cache()');
     }
+
+    // Check if this task participates in the cacheable contract
+    if (task.cacheable) {
+        // Use the cacheable options, but allow the user to override them
+        opts = _.extend({}, task.cacheable, opts);
+    }
+
+    // Make sure we have some sane defaults
+    opts = _.defaults(opts || {}, defaultOptions);
+
+    return map(function (file, cb) {
+        // Create a TaskProxy object and start up processFile().
+
+        var taskProxy = new TaskProxy({
+            task: task,
+            file: file,
+            opts: opts
+        });
+
+        taskProxy.processFile().then(function (result) {
+            cb(null, result);
+        }).catch(function (err) {
+            cb(new PluginError('gulp-cache', err));
+        });
+    });
 };
 
 cacheTask.fileCache = fileCache;
