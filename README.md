@@ -1,16 +1,20 @@
-gulp-cache  ![status](https://secure.travis-ci.org/jgable/gulp-cache.png?branch=master)
+gulp-cache  [![status](https://travis-ci.org/jgable/gulp-cache.png?branch=master)](https://travis-ci.org/jgable/gulp-cache)
 ==========
 
 A temp file based caching proxy task for Gulp.
 
-### Example
+## Usage
 
 ```javascript
+var gulp = require('gulp');
+var jshint = require('gulp-jshint');
+var cache = require('gulp-cache');
+
 gulp.task('lint', function() {
   gulp.src('./lib/*.js')
-    .pipe(cache.proxy({
-      task: jshint('.jshintrc'),
+    .pipe(cache(jshint('.jshintrc'), {
       key: makeHashKey,
+      // What on the result indicates it was successful
       success: function (jshintedFile) {
         return jshintedFile.jshint.success;
       },
@@ -33,25 +37,40 @@ function makeHashKey(file) {
 }
 ```
 
-### License
+## Options
+
+#### Key
+
+> [Optional] What to use to determine the uniqueness of an input file for this task.
+
+- Can return a string or a promise that resolves to a string.  Optionally, can accept a callback parameter for idiomatic node style asynchronous operations.  
+
+- The result of this method is converted to a unique MD5 hash automatically; no need to do this yourself.
+
+- Defaults to `file.contents` if a Buffer, or `undefined` if a Stream.
+
+#### Success
+
+> [Optional] How to determine if the resulting file was successful.
+
+- Must return a truthy value that is used to determine whether to cache the result of the task.
+
+- Defaults to true, so any task results will be cached.
+
+#### Value
+
+> [Optional] What to store as the cached result of the task.
+
+- Can be a function that returns an Object or a promise that resolves to an Object.  Optionally, can accept a callback for idiomatic node style asynchronous operations.
+
+- Can also be set to a string that will be picked (using `_.pick`) of the task result file.
+
+- The result of this method is run through `JSON.stringify` and stored in a temp file for later retrieval.
+
+- Defaults to `'contents'` which will grab the resulting file.contents and store them as a string.
+
+## License
 
 The MIT License (MIT)
 
-Copyright (c) 2014 Jacob Gable
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+Copyright (c) 2014 [Jacob Gable](http://jacobgable.com)
