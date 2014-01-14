@@ -1,6 +1,6 @@
 {
   "name": "gulp-cache",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A cache proxy task for Gulp",
   "main": "index.js",
   "scripts": {
@@ -29,7 +29,7 @@
     "gulp-util": "~2.2.9",
     "cache-swap": "0.0.5",
     "lodash-node": "~2.4.1",
-    "bluebird": "~0.11.6-0",
+    "bluebird": "~1.0.0",
     "map-stream": "~0.1.0"
   },
   "config": {
