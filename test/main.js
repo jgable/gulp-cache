@@ -1,6 +1,7 @@
 'use strict';
 
-var PassThrough = require('stream').PassThrough,
+var crypto = require('crypto'),
+    PassThrough = require('stream').PassThrough,
     _ = require('lodash-node'),
     should = require('should'),
     sinon = require('sinon'),
@@ -154,6 +155,40 @@ describe('gulp-cache', function () {
     });
 
     describe('in buffered mode', function () {
+        it('can clear all the cache', function (done) {
+            cache.clearAll(function (err) {
+                done(err);
+            });
+        });
+
+        it('can clear specific cache', function (done) {
+            var fakeFileCache = {
+                    removeCached: sinon.spy(function (category, hash, done) {
+                        return done();
+                    })
+                },
+                someKeyHash = crypto.createHash('md5').update('somekey').digest('hex'),
+                fakeFile = new gutil.File({
+                    contents: new Buffer('something')
+                });
+
+            var toClear = cache.clear({
+                name: 'somename',
+                fileCache: fakeFileCache,
+                key: function () {
+                    return 'somekey';
+                }
+            });
+
+            toClear.write(fakeFile);
+
+            toClear.once('data', function () {
+                fakeFileCache.removeCached.calledWith('somename', someKeyHash).should.equal(true);
+
+                done();
+            });
+        });
+
         it('only caches successful tasks', function (done) {
             // create the fake file
             var fakeFile = new gutil.File({

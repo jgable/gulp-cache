@@ -39,7 +39,7 @@ var cacheTask = function (task, opts) {
     }
 
     // Make sure we have some sane defaults
-    opts = _.defaults(opts || {}, defaultOptions);
+    opts = _.defaults(opts || {}, cacheTask.defaultOptions);
 
     return map(function (file, cb) {
         // Create a TaskProxy object and start up processFile().
@@ -58,6 +58,37 @@ var cacheTask = function (task, opts) {
     });
 };
 
+cacheTask.clear = function (opts) {
+    opts = _.defaults(opts || {}, cacheTask.defaultOptions);
+
+    return map(function (file, cb) {
+        var taskProxy = new TaskProxy({
+            task: null,
+            file: file,
+            opts: opts
+        });
+
+        taskProxy.removeCachedResult().then(function () {
+            cb(null, file);
+        }).catch(function (err) {
+            cb(new PluginError('gulp-cache', err));
+        });
+    });
+};
+
+cacheTask.clearAll = function (done) {
+    done = done || _.noop;
+
+    fileCache.clear(null, function (err) {
+        if (err) {
+            throw new PluginError('gulp-cache', 'Problem clearing the cache: ' + err.message);
+        }
+
+        done();
+    });
+};
+
 cacheTask.fileCache = fileCache;
+cacheTask.defaultOptions = defaultOptions;
 
 module.exports = cacheTask;
