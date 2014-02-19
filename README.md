@@ -1,4 +1,4 @@
-gulp-cache  [![status](https://travis-ci.org/jgable/gulp-cache.png?branch=master)](https://travis-ci.org/jgable/gulp-cache)
+gulp-cache  [![status](https://travis-ci.org/jgable/gulp-cache.png?branch=master)](https://travis-ci.org/jgable/gulp-cache) [![Dependency Status](https://david-dm.org/jgable/gulp-cache.png)](https://david-dm.org/jgable/gulp-cache)
 ==========
 
 A temp file based caching proxy task for Gulp.
