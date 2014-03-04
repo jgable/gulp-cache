@@ -13,12 +13,15 @@ var cache = require('../index');
 require('mocha');
 
 describe('gulp-cache', function () {
-    var fakeFileHandler,
+    var sandbox,
+        fakeFileHandler,
         fakeTask;
 
     beforeEach(function (done) {
+        sandbox = sinon.sandbox.create();
+
         // Spy on the fakeFileHandler to check if it gets called later
-        fakeFileHandler = sinon.spy(function (file, cb) {
+        fakeFileHandler = sandbox.spy(function (file, cb) {
             file.ran = true;
             
             cb(null, file);
@@ -26,6 +29,10 @@ describe('gulp-cache', function () {
         fakeTask = map(fakeFileHandler);
 
         cache.fileCache.clear('default', done);
+    });
+
+    afterEach(function () {
+        sandbox.restore();
     });
 
     it('throws an error if no task is passed', function () {
@@ -163,7 +170,7 @@ describe('gulp-cache', function () {
 
         it('can clear specific cache', function (done) {
             var fakeFileCache = {
-                    removeCached: sinon.spy(function (category, hash, done) {
+                    removeCached: sandbox.spy(function (category, hash, done) {
                         return done();
                     })
                 },
@@ -196,7 +203,7 @@ describe('gulp-cache', function () {
                 });
 
             // Create a proxied plugin stream
-            var valStub = sinon.stub().returns({
+            var valStub = sandbox.stub().returns({
                     ran: true,
                     cached: true
                 }),
@@ -283,11 +290,11 @@ describe('gulp-cache', function () {
 
             // Let the task define the cacheable aspects.
             fakeTask.cacheable = {
-                key: sinon.spy(function (file) {
+                key: sandbox.spy(function (file) {
                     return file.contents.toString('utf8');
                 }),
-                success: sinon.stub().returns(true),
-                value: sinon.stub().returns({
+                success: sandbox.stub().returns(true),
+                value: sandbox.stub().returns({
                     ran: true,
                     cached: true
                 })
@@ -345,17 +352,17 @@ describe('gulp-cache', function () {
 
             // Let the task define the cacheable aspects.
             fakeTask.cacheable = {
-                key: sinon.spy(function (file) {
+                key: sandbox.spy(function (file) {
                     return file.contents.toString('utf8');
                 }),
-                success: sinon.stub().returns(true),
-                value: sinon.stub().returns({
+                success: sandbox.stub().returns(true),
+                value: sandbox.stub().returns({
                     ran: true,
                     cached: true
                 })
             };
 
-            var overriddenValue = sinon.stub().returns({
+            var overriddenValue = sandbox.stub().returns({
                     ran: true,
                     cached: true,
                     overridden: true
@@ -446,7 +453,7 @@ describe('gulp-cache', function () {
             var fakeFile = new gutil.File({
                     contents: new Buffer('abufferwiththiscontent')
                 }),
-                updatedFileHandler = sinon.spy(function (file, cb) {
+                updatedFileHandler = sandbox.spy(function (file, cb) {
                     file.contents = new Buffer('updatedcontent');
 
                     cb(null, file);
@@ -484,6 +491,41 @@ describe('gulp-cache', function () {
 
                     done();
                 });
+            });
+        });
+
+        it('does not throw memory leak warning when proxying tasks', function (done) {
+            var files = _.times(30, function (i) {
+                    return new gutil.File({
+                        contents: new Buffer('Test File ' + i)
+                    });
+                }),
+                fakeTask = map(function (file, cb) {
+                    setTimeout(function () {
+                        file.contents = new Buffer(file.contents.toString() + ' updated');
+
+                        cb(null, file);
+                    }, 10);
+                }),
+                proxied = cache(fakeTask);
+
+            var origMaxListeners = fakeTask._maxListeners;
+            var errSpy = sandbox.spy(console, 'error');
+
+            var processedCount = 0;
+            proxied.on('data', function () {
+                processedCount += 1;
+
+                if (processedCount === files.length) {
+                    errSpy.called.should.equal(false, 'Called console.error');
+                    fakeTask._maxListeners.should.equal(origMaxListeners || 0);
+
+                    done();
+                }
+            });
+
+            _.each(files, function (file) {
+                proxied.write(file);
             });
         });
     });
