@@ -39,7 +39,19 @@ function makeHashKey(file) {
 
 ## Options
 
-#### Key
+#### `fileCache`
+
+> [Optional] Where to store the cache objects
+
+- Defaults to `new Cache({ cacheDirName: 'gulp-cache' })`
+
+#### `name`
+
+> [Optional] The name of the bucket which stores the cached objects
+
+- Defaults to `default`
+
+#### `key`
 
 > [Optional] What to use to determine the uniqueness of an input file for this task.
 
@@ -49,7 +61,7 @@ function makeHashKey(file) {
 
 - Defaults to `file.contents` if a Buffer, or `undefined` if a Stream.
 
-#### Success
+#### `success`
 
 > [Optional] How to determine if the resulting file was successful.
 
@@ -57,7 +69,7 @@ function makeHashKey(file) {
 
 - Defaults to true, so any task results will be cached.
 
-#### Value
+#### `value`
 
 > [Optional] What to store as the cached result of the task.
 
