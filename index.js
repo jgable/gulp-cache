@@ -21,7 +21,17 @@ var defaultOptions = {
         return undefined;
     },
     success: true,
-    value: 'contents'
+    value: function (file) {
+        // Shallow copy
+        var copy = _.clone(file);
+
+        // Convert contents from a buffer to a string
+        if (Buffer.isBuffer(copy.contents) && copy.contents.length) {
+            copy.contents = copy.contents.toString('utf8');
+        }
+
+        return copy;
+    }
 };
 
 var cacheTask = function (task, opts) {
