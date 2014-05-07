@@ -23,11 +23,12 @@ var defaultOptions = {
     success: true,
     value: function (file) {
         // Shallow copy
-        var copy = _.clone(file);
+        var copy = _.clone(file),
+            contents = copy.contents || copy._contents;
 
         // Convert contents from a buffer to a string
-        if (Buffer.isBuffer(copy.contents) && copy.contents.length) {
-            copy.contents = copy.contents.toString('utf8');
+        if (Buffer.isBuffer(contents) && contents.length) {
+            copy.contents = contents.toString('utf8');
         }
 
         return copy;
