@@ -2,10 +2,10 @@
 
 var _ = require('lodash-node'),
     map = require('map-stream'),
-    PluginError = require('gulp-util').PluginError,
+    gutil = require('gulp-util'),
+    PluginError = gutil.PluginError,
     Cache = require('cache-swap'),
-    TaskProxy = require('./lib/TaskProxy'),
-    File = require('vinyl');
+    TaskProxy = require('./lib/TaskProxy');
 
 var fileCache = new Cache({
     cacheDirName: 'gulp-cache'
@@ -26,7 +26,7 @@ var defaultOptions = {
             restored.contents = new Buffer(restored.contents, 'utf8');
         }
 
-        return new File(restored);
+        return new gutil.File(restored);
     },
     success: true,
     value: function (file) {
