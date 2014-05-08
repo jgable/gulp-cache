@@ -2,7 +2,8 @@
 
 var _ = require('lodash-node'),
     map = require('map-stream'),
-    PluginError = require('gulp-util').PluginError,
+    gutil = require('gulp-util'),
+    PluginError = gutil.PluginError,
     Cache = require('cache-swap'),
     TaskProxy = require('./lib/TaskProxy');
 
@@ -20,15 +21,30 @@ var defaultOptions = {
 
         return undefined;
     },
+    restore: function (restored) {
+        if (restored.contents) {
+            restored.contents = new Buffer(restored.contents, 'utf8');
+        }
+
+        return new gutil.File(restored);
+    },
     success: true,
     value: function (file) {
-        // Shallow copy
-        var copy = _.clone(file),
-            contents = copy.contents || copy._contents;
+        /* Convert from a File object (from vinyl) into a plain object so
+         * we can change the contents to a string.  Using normal cloning
+         * methods will copy the _contents property, which is not what we
+         * want.
+         */
+        var copy = {
+            cwd: file.cwd,
+            base: file.base,
+            path: file.path,
+            stat: file.stat,
+            contents: file.contents
+        };
 
-        // Convert contents from a buffer to a string
-        if (Buffer.isBuffer(contents) && contents.length) {
-            copy.contents = contents.toString('utf8');
+        if (Buffer.isBuffer(copy.contents)) {
+            copy.contents = copy.contents.toString('utf8');
         }
 
         return copy;
@@ -36,8 +52,6 @@ var defaultOptions = {
 };
 
 var cacheTask = function (task, opts) {
-    var self = this;
-
     // Check for required task option
     if (!task) {
         throw new PluginError('gulp-cache', 'Must pass a task to cache()');
@@ -73,6 +87,12 @@ cacheTask.clear = function (opts) {
     opts = _.defaults(opts || {}, cacheTask.defaultOptions);
 
     return map(function (file, cb) {
+        // Indicate clearly that we do not support Streams
+        if (file.isStream()) {
+            cb(new PluginError('gulp-cache', 'Can not operate on stream sources'));
+            return;
+        }
+
         var taskProxy = new TaskProxy({
             task: null,
             file: file,
