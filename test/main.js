@@ -29,7 +29,7 @@ describe('gulp-cache', function () {
             }
             
             cb(null, file);
-        }),
+        });
         fakeTask = map(fakeFileHandler);
 
         cache.fileCache.clear('default', done);
@@ -48,7 +48,7 @@ describe('gulp-cache', function () {
     });
 
     describe('in streaming mode', function () {
-        it('can proxy a task', function (done) {
+        it('does not work', function () {
             // create the fake file
             var fakeStream = new PassThrough(),
                 fakeFile = new gutil.File({
@@ -75,93 +75,11 @@ describe('gulp-cache', function () {
             });
 
             // write the fake file to it
-            proxied.write(fakeFile);
-
-            // wait for the file to come back out
-            proxied.once('data', function (file) {
-
-                // make sure it came out the same way it went in
-                file.isStream().should.equal(true);
-                
-                // Check it assigned the proxied task result
-                file.ran.should.equal(true);
-                should.not.exist(file.cached);
-
-                // Check the original task was called
-                fakeFileHandler.called.should.equal(true);
-
-                // Reset for the second run through
-                fakeFileHandler.reset();
-
-                // Write the same file again, should be cached result
+            var writeFile = function () {
                 proxied.write(fakeFile);
+            };
 
-                proxied.once('data', function (secondFile) {
-                    // make sure it came out the same way it went in
-                    secondFile.isStream().should.equal(true);
-
-                    // Cached value should have been applied
-                    secondFile.ran.should.equal(true);
-                    secondFile.cached.should.equal(true);
-
-                    // Should not have called the original task
-                    fakeFileHandler.called.should.equal(false);
-
-                    done();
-                });
-            });
-        });
-
-        it('cannot set a default key for files', function (done) {
-            // create the fake file
-            var fakeStream = new PassThrough(),
-                fakeFile = new gutil.File({
-                    contents: fakeStream
-                });
-
-            // Create a proxied plugin stream
-            var proxied = cache(fakeTask, {
-                value: function (file, cb) {
-                    // For testing async value generation
-                    setTimeout(function () {
-                        cb(null, {
-                            ran: file.ran,
-                            cached: true
-                        });
-                    }, 1);
-                }
-            });
-
-            // write the fake file to it
-            proxied.write(fakeFile);
-
-            // wait for the file to come back out
-            proxied.once('data', function (file) {
-
-                // Check it assigned the proxied task result
-                file.ran.should.equal(true);
-                should.not.exist(file.cached);
-
-                // Check the original task was called
-                fakeFileHandler.called.should.equal(true);
-
-                // Reset for the second run through
-                fakeFileHandler.reset();
-
-                // Write the same file again
-                proxied.write(fakeFile);
-
-                proxied.once('data', function (secondFile) {
-                    // Cached value should not have been applied
-                    secondFile.ran.should.equal(true);
-                    should.not.exist(secondFile.cached);
-
-                    // Should have called the original task
-                    fakeFileHandler.called.should.equal(true);
-
-                    done();
-                });
-            });
+            writeFile.should.throw();
         });
     });
 

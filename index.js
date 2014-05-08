@@ -26,7 +26,14 @@ var defaultOptions = {
             restored.contents = new Buffer(restored.contents, 'utf8');
         }
 
-        return new gutil.File(restored);
+        var restoredFile = new gutil.File(restored),
+            extraTaskProperties = _.omit(restored, _.keys(restoredFile));
+
+        // Restore any properties that the original task put on the file;
+        // but omit the normal properties of the file
+        _.extend(restoredFile, extraTaskProperties);
+
+        return restoredFile;
     },
     success: true,
     value: function (file) {
@@ -35,16 +42,13 @@ var defaultOptions = {
          * methods will copy the _contents property, which is not what we
          * want.
          */
-        var copy = {
-            cwd: file.cwd,
-            base: file.base,
-            path: file.path,
-            stat: file.stat,
-            contents: file.contents
-        };
+        var copy = _.clone(file),
+            contents = copy.contents || copy._contents;
 
-        if (Buffer.isBuffer(copy.contents)) {
-            copy.contents = copy.contents.toString('utf8');
+        if (Buffer.isBuffer(contents)) {
+            copy.contents = contents.toString('utf8');
+        } else if (_.isString(contents)) {
+            copy.contents = contents;
         }
 
         return copy;
@@ -67,6 +71,12 @@ var cacheTask = function (task, opts) {
     opts = _.defaults(opts || {}, cacheTask.defaultOptions);
 
     return map(function (file, cb) {
+        // Indicate clearly that we do not support Streams
+        if (file.isStream()) {
+            cb(new PluginError('gulp-cache', 'Can not operate on stream sources'));
+            return;
+        }
+
         // Create a TaskProxy object and start up processFile().
 
         var taskProxy = new TaskProxy({
