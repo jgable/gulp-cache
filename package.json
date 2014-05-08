@@ -34,8 +34,27 @@
   },
   "config": {
     "blanket": {
-      "pattern": ["index.js", "/lib/TaskProxy.js"],
+      "pattern": [
+        "index.js",
+        "/lib/TaskProxy.js"
+      ],
       "data-cover-never": "node_modules"
     }
-  }
+  },
+  "contributors": [
+    {
+      "name": "Jacob Gable",
+      "email": "jacob.gable@gmail.com",
+      "url": "https://github.com/jgable",
+      "contributions": 46,
+      "hireable": false
+    },
+    {
+      "name": "Tyler Akins",
+      "email": "fidian@rumkin.com",
+      "url": "https://github.com/fidian",
+      "contributions": 4,
+      "hireable": false
+    }
+  ]
 }
