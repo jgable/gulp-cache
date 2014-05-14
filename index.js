@@ -1,11 +1,13 @@
 'use strict';
 
-var _ = require('lodash-node'),
+var fs = require('fs'),
+    _ = require('lodash-node'),
     map = require('map-stream'),
     gutil = require('gulp-util'),
     PluginError = gutil.PluginError,
     Cache = require('cache-swap'),
-    TaskProxy = require('./lib/TaskProxy');
+    TaskProxy = require('./lib/TaskProxy'),
+    pkgInfo = require('./package.json');
 
 var fileCache = new Cache({
     cacheDirName: 'gulp-cache'
@@ -16,14 +18,14 @@ var defaultOptions = {
     name: 'default',
     key: function (file) {
         if (file.isBuffer()) {
-            return file.contents.toString('utf8');
+            return [pkgInfo.version, file.contents.toString('base64')].join('');
         }
 
         return undefined;
     },
     restore: function (restored) {
-        if (restored.contents) {
-            restored.contents = new Buffer(restored.contents, 'utf8');
+        if (restored.contents  && !Buffer.isBuffer(restored.contents)) {
+            restored.contents = new Buffer(restored.contents);
         }
 
         var restoredFile = new gutil.File(restored),
@@ -37,19 +39,11 @@ var defaultOptions = {
     },
     success: true,
     value: function (file) {
-        /* Convert from a File object (from vinyl) into a plain object so
-         * we can change the contents to a string.  Using normal cloning
-         * methods will copy the _contents property, which is not what we
-         * want.
-         */
+        // Convert from a File object (from vinyl) into a plain object
         var copy = _.clone(file),
             contents = copy.contents || copy._contents;
 
-        if (Buffer.isBuffer(contents)) {
-            copy.contents = contents.toString('utf8');
-        } else if (_.isString(contents)) {
-            copy.contents = contents;
-        }
+        copy.contents = contents;
 
         return copy;
     }
