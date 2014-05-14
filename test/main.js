@@ -193,7 +193,7 @@ describe('gulp-cache', function () {
                     return {
                         ran: file.ran,
                         cached: true,
-                        contents: (file.contents || file._contents).toString('utf8')
+                        contents: (file.contents || file._contents)
                     };
                 }
             });

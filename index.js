@@ -24,8 +24,15 @@ var defaultOptions = {
         return undefined;
     },
     restore: function (restored) {
-        if (restored.contents  && !Buffer.isBuffer(restored.contents)) {
-            restored.contents = new Buffer(restored.contents);
+        if (restored.contents) {
+            // Handle node 0.11 buffer to JSON as object with { type: 'buffer', data: [...] }
+            if (_.isObject(restored.contents) && _.isArray(restored.contents.data)) {
+                restored.contents = new Buffer(restored.contents.data);
+            } else if (_.isArray(restored.contents)) {
+                restored.contents = new Buffer(restored.contents);
+            } else if (_.isString(restored.contents)) {
+                restored.contents = new Buffer(restored.contents, 'base64');
+            }
         }
 
         var restoredFile = new gutil.File(restored),
@@ -44,6 +51,9 @@ var defaultOptions = {
             contents = copy.contents || copy._contents;
 
         copy.contents = contents;
+
+        // Remove the duplicated _contents value
+        delete copy._contents;
 
         return copy;
     }
