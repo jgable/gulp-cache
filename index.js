@@ -40,7 +40,7 @@ var defaultOptions = {
 
         // Restore any properties that the original task put on the file;
         // but omit the normal properties of the file
-        _.extend(restoredFile, extraTaskProperties);
+        _.merge(restoredFile, extraTaskProperties);
 
         return restoredFile;
     },
