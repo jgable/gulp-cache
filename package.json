@@ -26,10 +26,10 @@
     "sinon": "~1.7.3"
   },
   "dependencies": {
-    "gulp-util": "~2.2.9",
+    "bluebird": "^2.2.2",
     "cache-swap": "0.0.6",
+    "gulp-util": "^3.0.0",
     "lodash-node": "~2.4.1",
-    "bluebird": "~1.0.0",
     "map-stream": "~0.1.0"
   },
   "config": {
