@@ -1,6 +1,7 @@
 'use strict';
 
-var crypto = require('crypto'),
+var path = require('path'),
+    crypto = require('crypto'),
     PassThrough = require('stream').PassThrough,
     _ = require('lodash-node'),
     should = require('should'),
@@ -497,6 +498,56 @@ describe('gulp-cache', function () {
 
             _.each(files, function (file) {
                 proxied.write(file);
+            });
+        });
+
+        it('sets the path on cached results', function (done) {
+            // create the fake file
+            var filePath = path.join(process.cwd(), 'test', 'fixtures', 'in', 'file1.txt'),
+                fakeFile = new gutil.File({
+                    base: path.dirname(filePath),
+                    path: filePath,
+                    contents: new Buffer('abufferwiththiscontent')
+                }),
+                updatedFileHandler = sandbox.spy(function (file, cb) {
+                    file.contents = new Buffer('updatedcontent');
+
+                    cb(null, file);
+                });
+
+            fakeTask = map(updatedFileHandler);
+
+            // Create a proxied plugin stream
+            var proxied = cache(fakeTask);
+
+            // write the fake file to it
+            proxied.write(fakeFile);
+
+            // wait for the file to come back out
+            proxied.once('data', function (file) {
+                // Check original handler was called
+                updatedFileHandler.called.should.equal(true);
+
+                // Check the path is on there
+                file.path.should.equal(filePath);
+
+                updatedFileHandler.reset();
+
+                // Write the same file again, should be cached result
+                proxied.write(new gutil.File({
+                    contents: new Buffer('abufferwiththiscontent')
+                }));
+
+                proxied.once('data', function (secondFile) {
+                    // Check for same file path
+                    should.exist(secondFile.path);
+                    secondFile.path.should.equal(filePath);
+
+                    // Check original handler was not called.
+                    updatedFileHandler.called.should.equal(false);
+
+                    done();
+                });
             });
         });
     });

@@ -47,15 +47,7 @@ var defaultOptions = {
     success: true,
     value: function (file) {
         // Convert from a File object (from vinyl) into a plain object
-        var copy = _.clone(file),
-            contents = copy.contents || copy._contents;
-
-        copy.contents = contents;
-
-        // Remove the duplicated _contents value
-        delete copy._contents;
-
-        return copy;
+        return _.pick(file, 'cwd', 'base', 'path', 'contents', 'stat');
     }
 };
 
