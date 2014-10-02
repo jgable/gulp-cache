@@ -48,6 +48,10 @@ describe('gulp-cache', function () {
         shouldThrow.should.throw();
     });
 
+    it('exposes the Cache object for creating custom Caches', function () {
+        should.exist(cache.Cache);
+    });
+
     describe('in streaming mode', function () {
         it('does not work', function () {
             // create the fake file

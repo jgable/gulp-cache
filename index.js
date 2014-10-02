@@ -127,5 +127,6 @@ cacheTask.clearAll = function (done) {
 
 cacheTask.fileCache = fileCache;
 cacheTask.defaultOptions = defaultOptions;
+cacheTask.Cache = Cache;
 
 module.exports = cacheTask;
