@@ -45,6 +45,8 @@ function makeHashKey(file) {
 
 - Defaults to `new Cache({ cacheDirName: 'gulp-cache' })`
 
+- Create your own with `new cache.Cache({ cacheDirName: 'custom-cache' })`
+
 #### `name`
 
 > [Optional] The name of the bucket which stores the cached objects
