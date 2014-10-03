@@ -47,7 +47,7 @@ var defaultOptions = {
     success: true,
     value: function (file) {
         // Convert from a File object (from vinyl) into a plain object
-        return _.pick(file, 'cwd', 'base', 'path', 'contents', 'stat');
+        return _.pick(file, 'cwd', 'base', 'contents', 'stat', 'history');
     }
 };
 
