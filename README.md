@@ -37,6 +37,20 @@ function makeHashKey(file) {
 }
 ```
 
+## Clearing the cache
+
+If you find yourself needing to clear the cache, there is a handy dandy `cache.clearAll()` method:
+
+```js
+var cache = require('gulp-cache');
+
+gulp.task('clear', function (done) {
+  return cache.clearAll(done);
+});
+```
+
+You can then run it with `gulp clear`.
+
 ## Options
 
 #### `fileCache`
