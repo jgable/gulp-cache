@@ -2,10 +2,9 @@
   "name": "gulp-cache",
   "version": "0.2.4",
   "description": "A cache proxy task for Gulp",
-  "main": "index.js",
   "scripts": {
-    "test": "./node_modules/jshint/bin/jshint **/*.js && ./node_modules/mocha/bin/mocha -R spec",
-    "coverage": "./node_modules/jshint/bin/jshint **/*.js && ./node_modules/mocha/bin/mocha --require blanket -R html-cov > coverage.html && open coverage.html"
+    "test": "jshint **/*.js && mocha",
+    "coverage": "jshint **/*.js && mocha --require blanket -R html-cov > coverage.html && open coverage.html"
   },
   "repository": {
     "type": "git",
