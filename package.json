@@ -30,7 +30,7 @@
     "cache-swap": "0.1.0",
     "gulp-util": "^3.0.0",
     "lodash-node": "~2.4.1",
-    "map-stream": "~0.1.0"
+    "through2": "^0.6.3"
   },
   "config": {
     "blanket": {

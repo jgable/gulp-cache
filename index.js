@@ -2,7 +2,7 @@
 
 var fs = require('fs'),
     _ = require('lodash-node'),
-    map = require('map-stream'),
+    through = require('through2'),
     gutil = require('gulp-util'),
     PluginError = gutil.PluginError,
     Cache = require('cache-swap'),
@@ -66,7 +66,7 @@ var cacheTask = function (task, opts) {
     // Make sure we have some sane defaults
     opts = _.defaults(opts || {}, cacheTask.defaultOptions);
 
-    return map(function (file, cb) {
+    return through.obj(function (file, enc, cb) {
         // Indicate clearly that we do not support Streams
         if (file.isStream()) {
             cb(new PluginError('gulp-cache', 'Can not operate on stream sources'));
@@ -92,7 +92,7 @@ var cacheTask = function (task, opts) {
 cacheTask.clear = function (opts) {
     opts = _.defaults(opts || {}, cacheTask.defaultOptions);
 
-    return map(function (file, cb) {
+    return through.obj(function (file, enc, cb) {
         // Indicate clearly that we do not support Streams
         if (file.isStream()) {
             cb(new PluginError('gulp-cache', 'Can not operate on stream sources'));
