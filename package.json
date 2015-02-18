@@ -1,6 +1,6 @@
 {
   "name": "gulp-cache",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "A cache proxy task for Gulp",
   "scripts": {
     "test": "jshint **/*.js && mocha",
