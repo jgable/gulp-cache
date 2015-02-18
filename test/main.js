@@ -6,7 +6,7 @@ var path = require('path'),
     _ = require('lodash-node'),
     should = require('should'),
     sinon = require('sinon'),
-    map = require('map-stream'),
+    through = require('through2'),
     gutil = require('gulp-util');
 
 var cache = require('../index');
@@ -22,7 +22,7 @@ describe('gulp-cache', function () {
         sandbox = sinon.sandbox.create();
 
         // Spy on the fakeFileHandler to check if it gets called later
-        fakeFileHandler = sandbox.spy(function (file, cb) {
+        fakeFileHandler = sandbox.spy(function (file, enc, cb) {
             file.ran = true;
 
             if (Buffer.isBuffer(file.contents)) {
@@ -31,7 +31,7 @@ describe('gulp-cache', function () {
             
             cb(null, file);
         });
-        fakeTask = map(fakeFileHandler);
+        fakeTask = through.obj(fakeFileHandler);
 
         cache.fileCache.clear('default', done);
     });
@@ -429,13 +429,13 @@ describe('gulp-cache', function () {
             var fakeFile = new gutil.File({
                     contents: new Buffer('abufferwiththiscontent')
                 }),
-                updatedFileHandler = sandbox.spy(function (file, cb) {
+                updatedFileHandler = sandbox.spy(function (file, enc, cb) {
                     file.contents = new Buffer('updatedcontent');
 
                     cb(null, file);
                 });
 
-            fakeTask = map(updatedFileHandler);
+            fakeTask = through.obj(updatedFileHandler);
 
             // Create a proxied plugin stream
             var proxied = cache(fakeTask);
@@ -476,7 +476,7 @@ describe('gulp-cache', function () {
                         contents: new Buffer('Test File ' + i)
                     });
                 }),
-                fakeTask = map(function (file, cb) {
+                fakeTask = through.obj(function (file, enc, cb) {
                     setTimeout(function () {
                         file.contents = new Buffer(file.contents.toString() + ' updated');
 
@@ -513,13 +513,13 @@ describe('gulp-cache', function () {
                     path: filePath,
                     contents: new Buffer('abufferwiththiscontent')
                 }),
-                updatedFileHandler = sandbox.spy(function (file, cb) {
+                updatedFileHandler = sandbox.spy(function (file, enc, cb) {
                     file.contents = new Buffer('updatedcontent');
 
                     cb(null, file);
                 });
 
-            fakeTask = map(updatedFileHandler);
+            fakeTask = through.obj(updatedFileHandler);
 
             // Create a proxied plugin stream
             var proxied = cache(fakeTask);
