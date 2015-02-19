@@ -1,11 +1,12 @@
-gulp-cache  [![status](https://travis-ci.org/jgable/gulp-cache.png?branch=master)](https://travis-ci.org/jgable/gulp-cache) [![Dependency Status](https://david-dm.org/jgable/gulp-cache.png)](https://david-dm.org/jgable/gulp-cache)
-==========
+# gulp-cache  [![status](https://travis-ci.org/jgable/gulp-cache.svg?branch=master)](https://travis-ci.org/jgable/gulp-cache) [![Coverage Status](https://img.shields.io/coveralls/jgable/gulp-cache.svg)](https://coveralls.io/r/jgable/gulp-cache) [![Dependency Status](https://david-dm.org/jgable/gulp-cache.svg)](https://david-dm.org/jgable/gulp-cache)
 
-A temp file based caching proxy task for Gulp.
+A temp file based caching proxy task for [gulp](http://gulpjs.com/).
 
 ## Usage
 
 ```javascript
+var fs = require('fs');
+
 var gulp = require('gulp');
 var jshint = require('gulp-jshint');
 var cache = require('gulp-cache');
@@ -99,6 +100,6 @@ You can then run it with `gulp clear`.
 
 ## License
 
-The MIT License (MIT)
+[The MIT License (MIT)](./LICENSE)
 
 Copyright (c) 2014 [Jacob Gable](http://jacobgable.com)
