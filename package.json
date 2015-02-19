@@ -3,43 +3,20 @@
   "version": "0.2.5",
   "description": "A cache proxy task for Gulp",
   "scripts": {
-    "test": "jshint **/*.js && mocha",
-    "coverage": "jshint **/*.js && mocha --require blanket -R html-cov > coverage.html && open coverage.html"
+    "pretest": "jshint *.js test/*.js",
+    "test": "mocha",
+    "coverage": "istanbul cover _mocha",
+    "coveralls": "${npm_package_scripts_coverage} && istanbul-coveralls"
   },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/jgable/gulp-cache.git"
-  },
+  "files": [
+    "index.js",
+    "lib"
+  ],
+  "repository": "jgable/gulp-cache",
   "keywords": [
     "gulpplugin"
   ],
   "author": "Jacob Gable <jacob.gable@gmail.com> (http://jacobgable.com)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/jgable/gulp-cache/issues"
-  },
-  "dependencies": {
-    "bluebird": "^2.2.2",
-    "cache-swap": "^0.1.1",
-    "gulp-util": "^3.0.0",
-    "lodash-node": "^3.2.0",
-    "through2": "^0.6.3"
-  },
-  "devDependencies": {
-    "should": "^5.0.0",
-    "mocha": "^2.1.0",
-    "jshint": "^2.6.0",
-    "sinon": "^1.12.2"
-  },
-  "config": {
-    "blanket": {
-      "pattern": [
-        "index.js",
-        "/lib/TaskProxy.js"
-      ],
-      "data-cover-never": "node_modules"
-    }
-  },
   "contributors": [
     {
       "name": "Jacob Gable",
@@ -54,6 +31,30 @@
       "url": "https://github.com/fidian",
       "contributions": 4,
       "hireable": false
+    },
+    {
+      "name": "Shinnosuke Watanabe",
+      "email": "snnskwtnb@gmail.com",
+      "url": "https://github.com/shinnn"
     }
-  ]
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^2.2.2",
+    "cache-swap": "^0.1.1",
+    "gulp-util": "^3.0.0",
+    "object-assign": "^2.0.0",
+    "object.omit": "^0.2.1",
+    "through2": "^0.6.3",
+    "vinyl": "^0.4.6"
+  },
+  "devDependencies": {
+    "istanbul": "^0.3.5",
+    "istanbul-coveralls": "^1.0.1",
+    "jshint": "^2.6.0",
+    "lodash-node": "^3.2.0",
+    "mocha": "^2.1.0",
+    "should": "^5.0.0",
+    "sinon": "^1.12.2"
+  }
 }

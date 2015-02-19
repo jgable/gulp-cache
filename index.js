@@ -1,53 +1,56 @@
 'use strict';
 
-var fs = require('fs'),
-    _ = require('lodash-node'),
+var Cache = require('cache-swap'),
+    File = require('vinyl'),
+    objectAssign = require('object-assign'),
+    objectOmit = require('object.omit'),
+    PluginError = require('gulp-util').PluginError,
     through = require('through2'),
-    gutil = require('gulp-util'),
-    PluginError = gutil.PluginError,
-    Cache = require('cache-swap'),
     TaskProxy = require('./lib/TaskProxy'),
-    pkgInfo = require('./package.json');
+    pkg = require('./package.json');
 
 var fileCache = new Cache({
     cacheDirName: 'gulp-cache'
 });
 
+function defaultKey (file) {
+    if (file.isBuffer()) {
+        return [pkg.version, file.contents.toString('base64')].join('');
+    }
+
+    return undefined;
+}
+
 var defaultOptions = {
     fileCache: fileCache,
     name: 'default',
-    key: function (file) {
-        if (file.isBuffer()) {
-            return [pkgInfo.version, file.contents.toString('base64')].join('');
-        }
-
-        return undefined;
-    },
+    key: defaultKey,
     restore: function (restored) {
         if (restored.contents) {
             // Handle node 0.11 buffer to JSON as object with { type: 'buffer', data: [...] }
-            if (_.isObject(restored.contents) && _.isArray(restored.contents.data)) {
+            if (restored && restored.contents && Array.isArray(restored.contents.data)) {
                 restored.contents = new Buffer(restored.contents.data);
-            } else if (_.isArray(restored.contents)) {
+            } else if (Array.isArray(restored.contents)) {
                 restored.contents = new Buffer(restored.contents);
-            } else if (_.isString(restored.contents)) {
+            } else if (typeof restored.contents === 'string') {
                 restored.contents = new Buffer(restored.contents, 'base64');
             }
         }
 
-        var restoredFile = new gutil.File(restored),
-            extraTaskProperties = _.omit(restored, _.keys(restoredFile));
+        var restoredFile = new File(restored),
+            extraTaskProperties = objectOmit(restored, Object.keys(restoredFile));
 
         // Restore any properties that the original task put on the file;
         // but omit the normal properties of the file
-        _.merge(restoredFile, extraTaskProperties);
-
-        return restoredFile;
+        return objectAssign(restoredFile, extraTaskProperties);
     },
     success: true,
     value: function (file) {
         // Convert from a File object (from vinyl) into a plain object
-        return _.pick(file, 'cwd', 'base', 'contents', 'stat', 'history');
+        return ['cwd', 'base', 'contents', 'stat', 'history'].reduce(function(obj, propName) {
+          obj[propName] = file[propName];
+          return obj;
+        }, {});
     }
 };
 
@@ -60,11 +63,11 @@ var cacheTask = function (task, opts) {
     // Check if this task participates in the cacheable contract
     if (task.cacheable) {
         // Use the cacheable options, but allow the user to override them
-        opts = _.extend({}, task.cacheable, opts);
+        opts = objectAssign({}, task.cacheable, opts);
     }
 
     // Make sure we have some sane defaults
-    opts = _.defaults(opts || {}, cacheTask.defaultOptions);
+    opts = objectAssign({}, cacheTask.defaultOptions, opts);
 
     return through.obj(function (file, enc, cb) {
         // Indicate clearly that we do not support Streams
@@ -83,14 +86,14 @@ var cacheTask = function (task, opts) {
 
         taskProxy.processFile().then(function (result) {
             cb(null, result);
-        }).catch(function (err) {
+        }, function (err) {
             cb(new PluginError('gulp-cache', err));
         });
     });
 };
 
 cacheTask.clear = function (opts) {
-    opts = _.defaults(opts || {}, cacheTask.defaultOptions);
+    opts = objectAssign({}, cacheTask.defaultOptions, opts);
 
     return through.obj(function (file, enc, cb) {
         // Indicate clearly that we do not support Streams
@@ -114,14 +117,14 @@ cacheTask.clear = function (opts) {
 };
 
 cacheTask.clearAll = function (done) {
-    done = done || _.noop;
-
     fileCache.clear(null, function (err) {
         if (err) {
             throw new PluginError('gulp-cache', 'Problem clearing the cache: ' + err.message);
         }
 
-        done();
+        if (done) {
+          done();
+        }
     });
 };
 
