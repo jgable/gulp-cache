@@ -3,12 +3,10 @@
   "version": "0.2.4",
   "description": "A cache proxy task for Gulp",
   "scripts": {
-    "test": "jshint **/*.js && mocha",
-    "coverage": "jshint **/*.js && mocha --require blanket -R html-cov > coverage.html && open coverage.html"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/jgable/gulp-cache.git"
+    "pretest": "jshint *.js test/*.js",
+    "test": "mocha",
+    "coverage": "istanbul cover _mocha",
+    "coveralls": "${npm_package_scripts_coverage} && istanbul-coveralls"
   },
   "keywords": [
     "gulpplugin"
@@ -56,4 +54,6 @@
       "hireable": false
     }
   ]
+    "istanbul": "^0.3.5",
+    "istanbul-coveralls": "^1.0.1",
 }
