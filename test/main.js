@@ -27,7 +27,7 @@ describe('gulp-cache', function () {
             if (Buffer.isBuffer(file.contents)) {
                 file.contents = new Buffer(String(file.contents) + '-modified');
             }
-            
+
             cb(null, file);
         });
         fakeTask = through.obj(fakeFileHandler);
@@ -52,7 +52,7 @@ describe('gulp-cache', function () {
     });
 
     describe('in streaming mode', function () {
-        it('does not work', function () {
+        it('does not work', function (done) {
             // Create a proxied plugin stream
             var proxied = cache(fakeTask, {
                 key: function (file, cb) {
@@ -72,12 +72,12 @@ describe('gulp-cache', function () {
                 }
             });
 
-            // write the fake file to it
-            var writeFile = function () {
-                proxied.write(new File({ contents: through() }));
-            };
-
-            writeFile.should.throw();
+            proxied
+            .on('error', function(err) {
+              err.message.should.equal('Cannot operate on stream sources');
+              done();
+            })
+            .end(new File({ contents: through() }));
         });
     });
 
@@ -90,14 +90,11 @@ describe('gulp-cache', function () {
 
         it('can clear specific cache', function (done) {
             var fakeFileCache = {
-                    removeCached: sandbox.spy(function (category, hash, done) {
-                        return done();
+                    removeCached: sandbox.spy(function (category, hash, cb) {
+                        return cb();
                     })
                 },
-                someKeyHash = crypto.createHash('md5').update('somekey').digest('hex'),
-                fakeFile = new File({
-                    contents: new Buffer('something')
-                });
+                someKeyHash = crypto.createHash('md5').update('somekey').digest('hex');
 
             cache.clear({
                 name: 'somename',
@@ -110,7 +107,9 @@ describe('gulp-cache', function () {
                 fakeFileCache.removeCached.calledWith('somename', someKeyHash).should.equal(true);
                 done();
             })
-            .end(fakeFile);
+            .end(new File({
+                contents: new Buffer('something')
+            }));
         });
 
         it('only caches successful tasks', function (done) {
@@ -126,9 +125,8 @@ describe('gulp-cache', function () {
               },
               value: valStub
             })
-            .on('data', function (file) {
+            .on('data', function () {
                 valStub.called.should.equal(false);
-
                 done();
             })
             .end(new File({
@@ -137,36 +135,31 @@ describe('gulp-cache', function () {
         });
 
         it('sets the content correctly on subsequently ran cached tasks', function (done) {
-            // create the fake file
-            var fakeFile = new File({
-                    contents: new Buffer('abufferwiththiscontent')
-                }),
-                otherFile = new File({
-                    contents: new Buffer('abufferwiththiscontent')
-                });
-
             // Create a proxied plugin stream
             var proxied = cache(fakeTask, {
-                    success: function () {
-                        return true;
-                    }
-                });
-
-            proxied.write(fakeFile);
+                success: function () {
+                    return true;
+                }
+            });
 
             proxied.once('data', function (file) {
-                file.contents.toString('utf8').should.equal('abufferwiththiscontent-modified');
-
-                proxied.write(otherFile);
+                String(file.contents).should.equal('abufferwiththiscontent-modified');
 
                 proxied.once('data', function (file2) {
-                    should.exist(file2.contents);
-
-                    file2.contents.toString('utf8').should.equal('abufferwiththiscontent-modified');
+                    should.exist(file2.isBuffer());
+                    String(file2.contents).should.equal('abufferwiththiscontent-modified');
 
                     done();
                 });
+
+                proxied.end(new File({
+                    contents: new Buffer('abufferwiththiscontent')
+                }));
             });
+
+            proxied.write(new File({
+                contents: new Buffer('abufferwiththiscontent')
+            }));
         });
 
         it('can proxy a task with specific options', function (done) {
@@ -214,11 +207,9 @@ describe('gulp-cache', function () {
                 proxied.write(otherFile);
 
                 proxied.once('data', function (secondFile) {
-                    // make sure it came out the same way it went in
                     secondFile.isBuffer().should.equal(true);
 
-                    // check the contents are same
-                    secondFile.contents.toString('utf8').should.equal('abufferwiththiscontent-modified');
+                    String(secondFile.contents).should.equal('abufferwiththiscontent-modified');
 
                     // Cached value should have been applied
                     secondFile.ran.should.equal(true);
@@ -275,11 +266,11 @@ describe('gulp-cache', function () {
                 fakeTask.cacheable.value.called.should.equal(true);
 
                 _.invoke([
-                        fakeTask.cacheable.key, 
-                        fakeTask.cacheable.success, 
-                        fakeTask.cacheable.value,
-                        fakeFileHandler
-                    ], 'reset');
+                    fakeTask.cacheable.key,
+                    fakeTask.cacheable.success,
+                    fakeTask.cacheable.value,
+                    fakeFileHandler
+                ], 'reset');
 
                 // Write the same file again, should be cached result
                 proxied.write(otherFile);
@@ -344,8 +335,8 @@ describe('gulp-cache', function () {
                 overriddenValue.called.should.equal(true);
 
                 _.invoke([
-                        fakeTask.cacheable.key, 
-                        fakeTask.cacheable.success, 
+                        fakeTask.cacheable.key,
+                        fakeTask.cacheable.success,
                         fakeTask.cacheable.value,
                         overriddenValue,
                         fakeFileHandler
@@ -427,8 +418,7 @@ describe('gulp-cache', function () {
 
                 updatedFileHandler.reset();
 
-                this.once('data', function (secondFile) {
-                    // Check for updated content
+                this.once('data', function () {
                     String(file.contents).should.equal('updatedcontent');
 
                     // Check original handler was not called.
@@ -445,17 +435,18 @@ describe('gulp-cache', function () {
         });
 
         it('does not throw memory leak warning when proxying tasks', function (done) {
+            fakeTask = through.obj(function (file, enc, cb) {
+                setTimeout(function () {
+                    file.contents = new Buffer(file.contents.toString() + ' updated');
+
+                    cb(null, file);
+                }, 10);
+            });
+
             var files = _.times(30, function (val, i) {
                     return new File({
                         contents: new Buffer('Test File ' + i)
                     });
-                }),
-                fakeTask = through.obj(function (file, enc, cb) {
-                    setTimeout(function () {
-                        file.contents = new Buffer(file.contents.toString() + ' updated');
-
-                        cb(null, file);
-                    }, 10);
                 }),
                 proxied = cache(fakeTask);
 

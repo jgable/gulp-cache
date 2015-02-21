@@ -1,0 +1,10 @@
+env:
+  node: true
+  mocha: true
+rules:
+  no-underscore-dangle: 0
+  eqeqeq: 2
+  block-scoped-var: 2
+  quotes:
+    - 2
+    - single

@@ -14,11 +14,7 @@ var fileCache = new Cache({
 });
 
 function defaultKey (file) {
-    if (file.isBuffer()) {
-        return [pkg.version, file.contents.toString('base64')].join('');
-    }
-
-    return undefined;
+    return [pkg.version, file.contents.toString('base64')].join('');
 }
 
 var defaultOptions = {
@@ -72,7 +68,7 @@ var cacheTask = function (task, opts) {
     return through.obj(function (file, enc, cb) {
         // Indicate clearly that we do not support Streams
         if (file.isStream()) {
-            cb(new PluginError('gulp-cache', 'Can not operate on stream sources'));
+            cb(new PluginError('gulp-cache', 'Cannot operate on stream sources'));
             return;
         }
 
