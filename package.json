@@ -40,8 +40,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "bluebird": "^2.2.2",
-    "cache-swap": "^0.1.1",
+    "bluebird": "^2.9.12",
+    "cache-swap": "^0.2.0",
     "gulp-util": "^3.0.0",
     "object-assign": "^2.0.0",
     "object.omit": "^0.2.1",
@@ -49,12 +49,12 @@
     "vinyl": "^0.4.6"
   },
   "devDependencies": {
-    "istanbul": "^0.3.5",
     "eslint": "^0.14.1",
+    "istanbul": "^0.3.6",
     "istanbul-coveralls": "^1.0.1",
-    "lodash-node": "^3.2.0",
+    "lodash-node": "^3.3.0",
     "mocha": "^2.1.0",
-    "should": "^5.0.0",
+    "should": "^5.0.1",
     "sinon": "^1.12.2"
   }
 }
