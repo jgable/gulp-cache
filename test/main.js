@@ -8,7 +8,6 @@ var path = require('path'),
     through = require('through2'),
     sinon = require('sinon');
 
-
 var cache = require('../');
 
 require('mocha');
@@ -52,69 +51,6 @@ describe('gulp-cache', function() {
         should.exist(cache.Cache);
     });
 
-    describe('constructing a file should result in empty contents', function() {
-        describe('constructor()', function() {
-            it('empty constructor should create file without contents', function(done) {
-                var file = new File();
-                should.not.exist(file.contents);
-                done();
-            });
-        });
-        describe('check directory path results in empty File', function() {
-            it('file contents should not exist', function(done) {
-                var file = new File('../');
-                should.not.exist(file.contents);
-                done();
-            });
-        });
-        describe('when passed a directory instead of a file (null mode)', function() {
-            it('should bail gracefully on the defaultKey function', function(done) {
-                // create the fake file
-                var filePath = path.join('../'),
-                    fakeFile = new File(filePath),
-                    updatedFileHandler = sandbox.spy(function(file, enc, cb) {
-                        file.contents = new Buffer('abufferwiththiscontent');
-                        cb(null, file);
-                    });
-
-                fakeTask = through.obj(updatedFileHandler);
-
-                // Create a proxied plugin stream
-                var proxied = cache(fakeTask);
-
-                // write the fake file to it
-                proxied.write(fakeFile);
-
-                // wait for the file to come back out
-                proxied.once('data', function(file) {
-                    // Check original handler was called
-                    updatedFileHandler.called.should.equal(true);
-
-                    // Check the path is on there
-                    file.path.should.equal(filePath);
-
-                    updatedFileHandler.reset();
-
-                    // Write the same file again, should be cached result
-                    proxied.write(new File({
-                        contents: new Buffer('abufferwiththiscontent')
-                    }));
-
-                    proxied.once('data', function(secondFile) {
-                        // Check for same file path
-                        should.exist(secondFile.path);
-                        secondFile.path.should.equal(filePath);
-
-                        // Check original handler was not called.
-                        updatedFileHandler.called.should.equal(false);
-
-                        done();
-                    });
-                });
-            });
-        });
-    });
-
     describe('in streaming mode', function() {
         it('does not work', function(done) {
             // Create a proxied plugin stream
@@ -138,7 +74,7 @@ describe('gulp-cache', function() {
 
             proxied
                 .on('error', function(err) {
-                    err.message.should.equal('Cannot operate on stream sources');
+                    err.message.should.equal('Can not operate on streams or empty files (e.g., directories)');
                     done();
                 })
                 .end(new File({
@@ -147,6 +83,45 @@ describe('gulp-cache', function() {
         });
     });
 
+    describe('in null file (directory) mode', function() {
+        it('should create file without contents', function(done) {
+            var file = new File();
+            should.not.exist(file.contents);
+            done();
+        });
+        it('passing a directory path should create a file without contents', function(done) {
+            var file = new File("../");
+            should.not.exist(file.contents);
+            done();
+        });
+        it('should not work', function(done) {
+            // Create a proxied plugin stream
+            var proxied = cache(fakeTask, {
+                key: function(file, cb) {
+                    // For testing async key generation
+                    setTimeout(function() {
+                        cb(null, '123');
+                    }, 1);
+                },
+                value: function(file, cb) {
+                    // For testing async value generation
+                    setTimeout(function() {
+                        cb(null, {
+                            ran: file.ran,
+                            cached: true
+                        });
+                    }, 1);
+                }
+            });
+
+            proxied
+                .on('error', function(err) {
+                    err.message.should.equal('Can not operate on streams or empty files (e.g., directories)');
+                    done();
+                })
+                .end(new File('../'));
+        });
+    });
     describe('in buffered mode', function() {
         it('can clear all the cache', function(done) {
             cache.clearAll(function(err) {
