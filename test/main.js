@@ -62,7 +62,7 @@ describe('gulp-cache', function() {
         });
         describe('check directory path results in empty File', function() {
             it('file contents should not exist', function(done) {
-                var file = new File("../");
+                var file = new File('../');
                 should.not.exist(file.contents);
                 done();
             });
