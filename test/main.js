@@ -51,6 +51,19 @@ describe('gulp-cache', function () {
         should.exist(cache.Cache);
     });
 
+    it('pass through the directories', function (done) {
+      var directory = new File();
+      var proxied = cache(fakeTask);
+
+        proxied
+        .on('data', function (file) {
+          file.should.eql(directory);
+          file.isNull().should.equal(true);
+          done();
+        })
+        .end(new File());
+    });
+
     describe('in streaming mode', function () {
         it('does not work', function (done) {
             // Create a proxied plugin stream
@@ -74,44 +87,14 @@ describe('gulp-cache', function () {
 
             proxied
             .on('error', function(err) {
-              err.message.should.equal('Cannot operate on stream sources');
-              done();
+                err.message.should.equal('Cannot operate on stream sources');
+                done();
             })
             .end(new File({ contents: through() }));
         });
     });
 
     describe('in buffered mode', function () {
-        it('can clear all the cache', function (done) {
-            cache.clearAll(function (err) {
-                done(err);
-            });
-        });
-
-        it('can clear specific cache', function (done) {
-            var fakeFileCache = {
-                    removeCached: sandbox.spy(function (category, hash, cb) {
-                        return cb();
-                    })
-                },
-                someKeyHash = crypto.createHash('md5').update('somekey').digest('hex');
-
-            cache.clear({
-                name: 'somename',
-                fileCache: fakeFileCache,
-                key: function () {
-                    return 'somekey';
-                }
-            })
-            .on('data', function () {
-                fakeFileCache.removeCached.calledWith('somename', someKeyHash).should.equal(true);
-                done();
-            })
-            .end(new File({
-                contents: new Buffer('something')
-            }));
-        });
-
         it('only caches successful tasks', function (done) {
             // Create a proxied plugin stream
             var valStub = sandbox.stub().returns({
@@ -521,5 +504,53 @@ describe('gulp-cache', function () {
                 });
             });
         });
+    });
+
+    it('does nothing when it tries to clear a directory', function (done) {
+        cache.clear()
+        .on('data', function (file) {
+            file.isNull().should.equal(true);
+            done();
+        })
+        .end(new File());
+    });
+
+    it('cannot clear specific stream cache', function (done) {
+        cache.clear()
+        .on('error', function (err) {
+            err.message.should.equal('Cannot operate on stream sources');
+            done();
+        })
+        .end(new File({contents: through()}));
+    });
+
+    it('can clear specific buffer cache', function (done) {
+        var fakeFileCache = {
+                removeCached: sandbox.spy(function (category, hash, cb) {
+                    return cb();
+                })
+            },
+            someKeyHash = crypto.createHash('md5').update('somekey').digest('hex');
+
+        cache.clear({
+            name: 'somename',
+            fileCache: fakeFileCache,
+            key: function () {
+                return 'somekey';
+            }
+        })
+        .on('data', function () {
+            fakeFileCache.removeCached.calledWith('somename', someKeyHash).should.equal(true);
+            done();
+        })
+        .end(new File({contents: new Buffer('something')}));
+    });
+
+    it('can clear all the cache', function () {
+        cache.clearAll();
+    });
+
+    it('can clear all the cache with callback', function (done) {
+        cache.clearAll(done);
     });
 });
