@@ -16,7 +16,7 @@ var fileCache = new Cache({
 function defaultKey (file) {
     // Indicate clearly that we do not support Streams and non-file files (e.g., directories)
     if (file.isStream() || file.isNull()) {
-        throw new PluginError('gulp-cache','Can not operate on streams or empty files (e.g., directories)', {showStack: true});
+        throw new PluginError('gulp-cache', 'Can not operate on streams or empty files (e.g., directories)', {showStack: true});
     } else {
         return [pkg.version, file.contents.toString('base64')].join('');
     }
@@ -73,7 +73,7 @@ var cacheTask = function (task, opts) {
     return through.obj(function (file, enc, cb) {
         // Indicate clearly that we do not support Streams and non-file files (e.g., directories)
         if (file.isStream() || file.isNull()) {
-            cb(new PluginError('gulp-cache','Can not operate on streams or empty files (e.g., directories)', {showStack: true}));
+            cb(new PluginError('gulp-cache', 'Can not operate on streams or empty files (e.g., directories)', {showStack: true}));
             return;
         }
 
@@ -99,7 +99,7 @@ cacheTask.clear = function (opts) {
     return through.obj(function (file, enc, cb) {
         // Indicate clearly that we do not support Streams and non-file files (e.g., directories)
         if (file.isStream() || file.isNull()) {
-            cb(new PluginError('gulp-cache','Can not operate on streams or empty files (e.g., directories)', {showStack: true}));
+            cb(new PluginError('gulp-cache', 'Can not operate on streams or empty files (e.g., directories)', {showStack: true}));
             return;
         }
 
