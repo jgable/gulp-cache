@@ -1,6 +1,6 @@
 {
   "name": "gulp-cache",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "A cache proxy plugin for Gulp",
   "scripts": {
     "pretest": "eslint *.js test/*.js",
