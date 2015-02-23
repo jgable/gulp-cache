@@ -66,6 +66,11 @@ var cacheTask = function (task, opts) {
     opts = objectAssign({}, cacheTask.defaultOptions, opts);
 
     return through.obj(function (file, enc, cb) {
+        if (file.isNull()) {
+            cb(null, file);
+            return;
+        }
+
         // Indicate clearly that we do not support Streams
         if (file.isStream()) {
             cb(new PluginError('gulp-cache', 'Cannot operate on stream sources'));
@@ -92,9 +97,14 @@ cacheTask.clear = function (opts) {
     opts = objectAssign({}, cacheTask.defaultOptions, opts);
 
     return through.obj(function (file, enc, cb) {
+        if (file.isNull()) {
+            cb(null, file);
+            return;
+        }
+
         // Indicate clearly that we do not support Streams
         if (file.isStream()) {
-            cb(new PluginError('gulp-cache', 'Can not operate on stream sources'));
+            cb(new PluginError('gulp-cache', 'Cannot operate on stream sources'));
             return;
         }
 
