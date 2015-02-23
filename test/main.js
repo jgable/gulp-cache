@@ -90,7 +90,7 @@ describe('gulp-cache', function() {
             done();
         });
         it('passing a directory path should create a file without contents', function(done) {
-            var file = new File("../");
+            var file = new File('../');
             should.not.exist(file.contents);
             done();
         });
