@@ -1,4 +1,10 @@
-# gulp-cache  [![status](https://travis-ci.org/jgable/gulp-cache.svg?branch=master)](https://travis-ci.org/jgable/gulp-cache) [![Coverage Status](https://img.shields.io/coveralls/jgable/gulp-cache.svg)](https://coveralls.io/r/jgable/gulp-cache) [![Dependency Status](https://david-dm.org/jgable/gulp-cache.svg)](https://david-dm.org/jgable/gulp-cache)
+# gulp-cache
+
+[![NPM version](https://img.shields.io/npm/v/gulp-cache.svg)](https://www.npmjs.com/package/gulp-cache)
+[![status](https://travis-ci.org/jgable/gulp-cache.svg?branch=master)](https://travis-ci.org/jgable/gulp-cache)
+[![Coverage Status](https://img.shields.io/coveralls/jgable/gulp-cache.svg)](https://coveralls.io/r/jgable/gulp-cache)
+[![Dependency Status](https://img.shields.io/david/jgable/gulp-cache.svg)](https://david-dm.org/jgable/gulp-cache)
+[![devDependency Status](https://img.shields.io/david/dev/jgable/gulp-cache.svg)](https://david-dm.org/jgable/gulp-cache#info=devDependencies)
 
 A temp file based caching proxy task for [gulp](http://gulpjs.com/).
 
@@ -20,7 +26,7 @@ gulp.task('lint', function() {
         return jshintedFile.jshint.success;
       },
       // What to store as the result of the successful action
-      value: function (jshintedFile) {
+      value: function(jshintedFile) {
         // Will be extended onto the file object on a cache hit next time task is ran
         return {
           jshint: jshintedFile.jshint
@@ -102,4 +108,4 @@ You can then run it with `gulp clear`.
 
 [The MIT License (MIT)](./LICENSE)
 
-Copyright (c) 2014 [Jacob Gable](http://jacobgable.com)
+Copyright (c) 2014 - 2015 [Jacob Gable](http://jacobgable.com)
