@@ -2,12 +2,6 @@
   "name": "gulp-cache",
   "version": "0.2.8",
   "description": "A cache proxy plugin for Gulp",
-  "scripts": {
-    "pretest": "eslint *.js test/*.js",
-    "test": "mocha",
-    "coverage": "istanbul cover _mocha",
-    "coveralls": "${npm_package_scripts_coverage} && istanbul-coveralls"
-  },
   "files": [
     "index.js",
     "lib"
@@ -39,22 +33,38 @@
     }
   ],
   "license": "MIT",
+  "scripts": {
+    "pretest": "jscs *.js lib/*.js test/*.js && eslint *.js lib/*.js test/*.js",
+    "test": "_mocha",
+    "coverage": "istanbul cover _mocha",
+    "coveralls": "${npm_package_scripts_coverage} && istanbul-coveralls"
+  },
   "dependencies": {
     "bluebird": "^2.9.12",
     "cache-swap": "^0.2.0",
     "gulp-util": "^3.0.0",
     "object-assign": "^2.0.0",
     "object.omit": "^0.2.1",
+    "object.pick": "^1.1.1",
     "through2": "^0.6.3",
+    "try-json-parse": "^0.1.1",
     "vinyl": "^0.4.6"
   },
   "devDependencies": {
-    "eslint": "^0.14.1",
+    "eslint": "^0.15.0",
     "istanbul": "^0.3.6",
     "istanbul-coveralls": "^1.0.1",
+    "jscs": "^1.11.3",
     "lodash-node": "^3.3.0",
     "mocha": "^2.1.0",
     "should": "^5.0.1",
     "sinon": "^1.12.2"
+  },
+  "jscsConfig": {
+    "preset": "google",
+    "disallowMultipleVarDecl": null,
+    "maximumLineLength": 98,
+    "requireBlocksOnNewline": true,
+    "validateLineBreaks": "LF"
   }
 }
