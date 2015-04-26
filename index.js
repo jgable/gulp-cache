@@ -12,7 +12,7 @@ var through = require('through2');
 var VERSION = require('./package.json').version;
 var fileCache = new Cache({cacheDirName: 'gulp-cache'});
 
-function defaultKey (file) {
+function defaultKey(file) {
   return [VERSION, file.contents.toString('base64')].join('');
 }
 
@@ -32,8 +32,8 @@ var defaultOptions = {
       }
     }
 
-    var restoredFile = new File(restored),
-    extraTaskProperties = objectOmit(restored, Object.keys(restoredFile));
+    var restoredFile = new File(restored);
+    var extraTaskProperties = objectOmit(restored, Object.keys(restoredFile));
 
     // Restore any properties that the original task put on the file;
     // but omit the normal properties of the file

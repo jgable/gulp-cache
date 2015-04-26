@@ -9,7 +9,7 @@ var should = require('should');
 var through = require('through2');
 var sinon = require('sinon');
 
-var cache = require('../');
+var cache = require('..');
 
 require('mocha');
 
@@ -146,8 +146,8 @@ describe('gulp-cache', function() {
       // create the fake file
       var fakeFile = new File({
         contents: new Buffer('abufferwiththiscontent')
-      }),
-      otherFile = new File({
+      });
+      var otherFile = new File({
         contents: new Buffer('abufferwiththiscontent')
       });
 
@@ -264,14 +264,6 @@ describe('gulp-cache', function() {
     });
 
     it('can proxy a task using task.cacheable with user overrides', function(done) {
-      // create the fake file
-      var fakeFile = new File({
-        contents: new Buffer('abufferwiththiscontent')
-      }),
-      otherFile = new File({
-        contents: new Buffer('abufferwiththiscontent')
-      });
-
       // Let the task define the cacheable aspects.
       fakeTask.cacheable = {
         key: sandbox.spy(function(file) {
@@ -330,20 +322,16 @@ describe('gulp-cache', function() {
           done();
         })
         // Write the same file again, should be cached result
-        .end(otherFile);
+        .end(new File({
+          contents: new Buffer('abufferwiththiscontent')
+        }));
       })
-      .write(fakeFile);
+      .write(new File({
+        contents: new Buffer('abufferwiththiscontent')
+      }));
     });
 
     it('can be passed just a string for the value', function(done) {
-      // create the fake file
-      var fakeFile = new File({
-        contents: new Buffer('abufferwiththiscontent')
-      }),
-      otherFile = new File({
-        contents: new Buffer('abufferwiththiscontent')
-      });
-
       // Create a proxied plugin stream
       cache(fakeTask, {value: 'ran'})
       .once('data', function(file) {
@@ -357,17 +345,17 @@ describe('gulp-cache', function() {
         });
 
         // Write the same file again, should be cached result
-        this.end(otherFile);
+        this.end(new File({
+          contents: new Buffer('abufferwiththiscontent')
+        }));
       })
-      .write(fakeFile);
+      .write(new File({
+        contents: new Buffer('abufferwiththiscontent')
+      }));
     });
 
     it('can store changed contents of files', function(done) {
-      // create the fake file
-      var fakeFile = new File({
-        contents: new Buffer('abufferwiththiscontent')
-      }),
-      updatedFileHandler = sandbox.spy(function(file, enc, cb) {
+      var updatedFileHandler = sandbox.spy(function(file, enc, cb) {
         file.contents = new Buffer('updatedcontent');
         cb(null, file);
       });
@@ -378,7 +366,9 @@ describe('gulp-cache', function() {
       var proxied = cache(fakeTask);
 
       // write the fake file to it
-      proxied.write(fakeFile);
+      proxied.write(new File({
+        contents: new Buffer('abufferwiththiscontent')
+      }));
 
       // wait for the file to come back out
       proxied.once('data', function(file) {
@@ -415,12 +405,7 @@ describe('gulp-cache', function() {
         }, 10);
       });
 
-      var files = _.times(30, function(val, i) {
-        return new File({
-          contents: new Buffer('Test File ' + i)
-        });
-      }),
-      proxied = cache(fakeTask);
+      var proxied = cache(fakeTask);
 
       var origMaxListeners = fakeTask._maxListeners;
       var errSpy = sandbox.spy(console, 'error');
@@ -438,7 +423,11 @@ describe('gulp-cache', function() {
         done();
       });
 
-      files.forEach(function(file) {
+      _.times(30, function(val, i) {
+        return new File({
+          contents: new Buffer('Test File ' + i)
+        });
+      }).forEach(function(file) {
         proxied.write(file);
       });
 
@@ -446,13 +435,8 @@ describe('gulp-cache', function() {
     });
 
     it('sets the path on cached results', function(done) {
-      // create the fake file
-      var filePath = path.join(process.cwd(), 'test', 'fixtures', 'in', 'file1.txt'),
-      fakeFile = new File({
-        path: filePath,
-        contents: new Buffer('abufferwiththiscontent')
-      }),
-      updatedFileHandler = sandbox.spy(function(file, enc, cb) {
+      var filePath = path.join(process.cwd(), 'test', 'fixtures', 'in', 'file1.txt');
+      var updatedFileHandler = sandbox.spy(function(file, enc, cb) {
         file.contents = new Buffer('updatedcontent');
 
         cb(null, file);
@@ -464,7 +448,10 @@ describe('gulp-cache', function() {
       var proxied = cache(fakeTask);
 
       // write the fake file to it
-      proxied.write(fakeFile);
+      proxied.write(new File({
+        path: filePath,
+        contents: new Buffer('abufferwiththiscontent')
+      }));
 
       // wait for the file to come back out
       proxied.once('data', function(file) {
@@ -518,8 +505,7 @@ describe('gulp-cache', function() {
       removeCached: sandbox.spy(function(category, hash, cb) {
         return cb();
       })
-    },
-    someKeyHash = crypto.createHash('md5').update('somekey').digest('hex');
+    };
 
     cache.clear({
       name: 'somename',
@@ -529,6 +515,7 @@ describe('gulp-cache', function() {
       }
     })
     .on('data', function() {
+      var someKeyHash = crypto.createHash('md5').update('somekey').digest('hex');
       fakeFileCache.removeCached.calledWith('somename', someKeyHash).should.equal(true);
       done();
     })
