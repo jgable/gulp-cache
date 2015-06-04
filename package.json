@@ -5,32 +5,10 @@
   "repository": "jgable/gulp-cache",
   "author": "Jacob Gable <jacob.gable@gmail.com> (http://jacobgable.com)",
   "contributors": [
-    {
-      "name": "Jacob Gable",
-      "email": "jacob.gable@gmail.com",
-      "url": "https://github.com/jgable",
-      "contributions": 46,
-      "hireable": false
-    },
-    {
-      "name": "Tyler Akins",
-      "email": "fidian@rumkin.com",
-      "url": "https://github.com/fidian",
-      "contributions": 4,
-      "hireable": false
-    },
-    {
-      "name": "Shinnosuke Watanabe",
-      "email": "snnskwtnb@gmail.com",
-      "url": "https://github.com/shinnn"
-    }
+    "Tyler Akins <fidian@rumkin.com>  (https://github.com/fidian)",
+    "Shinnosuke Watanabe <snnskwtnb@gmail.com> (https://github.com/shinnn)"
   ],
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/jgable/gulp-cache/blob/master/LICENSE"
-    }
-  ],
+  "license": "MIT",
   "keywords": [
     "gulpplugin",
     "gulp",
@@ -47,31 +25,24 @@
     "lib"
   ],
   "dependencies": {
-    "bluebird": "^2.9.24",
+    "bluebird": "^2.9.27",
     "cache-swap": "^0.2.0",
-    "gulp-util": "^3.0.4",
-    "object-assign": "^2.0.0",
+    "gulp-util": "^3.0.5",
+    "object-assign": "^3.0.0",
     "object.omit": "^1.1.0",
     "object.pick": "^1.1.1",
     "through2": "^0.6.5",
     "try-json-parse": "^0.1.1",
-    "vinyl": "^0.4.6"
+    "vinyl": "^0.5.0"
   },
   "devDependencies": {
     "@shinnn/eslintrc-node": "^1.0.2",
-    "eslint": "^0.20.0",
-    "istanbul": "^0.3.13",
+    "eslint": "^0.22.1",
+    "istanbul": "^0.3.14",
     "istanbul-coveralls": "^1.0.2",
-    "lodash-node": "^3.7.0",
-    "mocha": "^2.2.4",
-    "should": "^6.0.1",
+    "lodash-node": "^3.9.3",
+    "mocha": "^2.2.5",
+    "should": "^6.0.3",
     "sinon": "^1.14.1"
-  },
-  "jscsConfig": {
-    "preset": "google",
-    "disallowMultipleVarDecl": null,
-    "maximumLineLength": 98,
-    "requireBlocksOnNewline": true,
-    "validateLineBreaks": "LF"
   }
 }
