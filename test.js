@@ -10,9 +10,7 @@ var should = require('should');
 var through = require('through2');
 var sinon = require('sinon');
 
-var cache = require('..');
-
-require('mocha');
+var cache = require('./');
 
 describe('gulp-cache', function() {
   var sandbox;
