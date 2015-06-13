@@ -7,7 +7,7 @@ var objectOmit = require('object.omit');
 var objectPick = require('object.pick');
 var PluginError = require('gulp-util').PluginError;
 var TaskProxy = require('./lib/TaskProxy');
-var through = require('through2');
+var Transform = require('readable-stream/transform');
 
 var VERSION = require('./package.json').version;
 var fileCache = new Cache({cacheDirName: 'gulp-cache'});
@@ -61,55 +61,61 @@ var cacheTask = function(task, opts) {
   // Make sure we have some sane defaults
   opts = objectAssign({}, cacheTask.defaultOptions, opts);
 
-  return through.obj(function(file, enc, cb) {
-    if (file.isNull()) {
-      cb(null, file);
-      return;
-    }
+  return new Transform({
+    objectMode: true,
+    transform: function(file, enc, cb) {
+      if (file.isNull()) {
+        cb(null, file);
+        return;
+      }
 
-    if (file.isStream()) {
-      cb(new PluginError('gulp-cache', 'Cannot operate on stream sources'));
-      return;
-    }
+      if (file.isStream()) {
+        cb(new PluginError('gulp-cache', 'Cannot operate on stream sources'));
+        return;
+      }
 
-    new TaskProxy({
-      task: task,
-      file: file,
-      opts: opts
-    })
-    .processFile().then(function(result) {
-      cb(null, result);
-    }, function(err) {
-      cb(new PluginError('gulp-cache', err));
-    });
+      new TaskProxy({
+        task: task,
+        file: file,
+        opts: opts
+      })
+      .processFile().then(function(result) {
+        cb(null, result);
+      }, function(err) {
+        cb(new PluginError('gulp-cache', err));
+      });
+    }
   });
 };
 
 cacheTask.clear = function(opts) {
   opts = objectAssign({}, cacheTask.defaultOptions, opts);
 
-  return through.obj(function(file, enc, cb) {
-    if (file.isNull()) {
-      cb(null, file);
-      return;
+  return new Transform({
+    objectMode: true,
+    transform: function(file, enc, cb) {
+      if (file.isNull()) {
+        cb(null, file);
+        return;
+      }
+
+      if (file.isStream()) {
+        cb(new PluginError('gulp-cache', 'Cannot operate on stream sources'));
+        return;
+      }
+
+      var taskProxy = new TaskProxy({
+        task: null,
+        file: file,
+        opts: opts
+      });
+
+      taskProxy.removeCachedResult().then(function() {
+        cb(null, file);
+      }).catch(function(err) {
+        cb(new PluginError('gulp-cache', err));
+      });
     }
-
-    if (file.isStream()) {
-      cb(new PluginError('gulp-cache', 'Cannot operate on stream sources'));
-      return;
-    }
-
-    var taskProxy = new TaskProxy({
-      task: null,
-      file: file,
-      opts: opts
-    });
-
-    taskProxy.removeCachedResult().then(function() {
-      cb(null, file);
-    }).catch(function(err) {
-      cb(new PluginError('gulp-cache', err));
-    });
   });
 };
 
@@ -126,7 +132,7 @@ cacheTask.clearAll = function(done) {
         return;
       }
 
-      throw new PluginError('gulp-cache', 'Problem clearing the cache: ' + err.message);
+      throw pluginError;
     }
 
     if (done) {

@@ -15,9 +15,9 @@
     "cache"
   ],
   "scripts": {
-    "pretest": "eslint --config node_modules/@shinnn/eslintrc-node/rc.json --rule 'no-underscore-dangle: 0' index.js lib test",
-    "test": "_mocha",
-    "coverage": "istanbul cover _mocha",
+    "pretest": "eslint --config node_modules/@shinnn/eslintrc-node/rc.json --rule 'no-underscore-dangle: 0' index.js lib test.js",
+    "test": "_mocha test.js",
+    "coverage": "istanbul cover _mocha test.js",
     "coveralls": "${npm_package_scripts_coverage} && istanbul-coveralls"
   },
   "files": [
@@ -26,23 +26,24 @@
   ],
   "dependencies": {
     "bluebird": "^2.9.27",
-    "cache-swap": "^0.2.0",
+    "cache-swap": "^0.2.1",
     "gulp-util": "^3.0.5",
     "object-assign": "^3.0.0",
     "object.omit": "^1.1.0",
     "object.pick": "^1.1.1",
-    "through2": "^0.6.5",
+    "readable-stream": "^2.0.0",
     "try-json-parse": "^0.1.1",
     "vinyl": "^0.5.0"
   },
   "devDependencies": {
     "@shinnn/eslintrc-node": "^1.0.2",
     "eslint": "^0.22.1",
-    "istanbul": "^0.3.14",
-    "istanbul-coveralls": "^1.0.2",
+    "istanbul": "^0.3.15",
+    "istanbul-coveralls": "^1.0.3",
     "lodash-node": "^3.9.3",
     "mocha": "^2.2.5",
     "should": "^6.0.3",
-    "sinon": "^1.14.1"
+    "sinon": "^1.15.3",
+    "through2": "^2.0.0"
   }
 }
