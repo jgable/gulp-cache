@@ -28,8 +28,8 @@
     "bluebird": "^2.9.27",
     "cache-swap": "^0.2.1",
     "gulp-util": "^3.0.5",
-    "object-assign": "^3.0.0",
-    "object.omit": "^1.1.0",
+    "object-assign": "^4.0.1",
+    "object.omit": "^2.0.0",
     "object.pick": "^1.1.1",
     "readable-stream": "^2.0.0",
     "try-json-parse": "^0.1.1",
@@ -42,7 +42,7 @@
     "istanbul-coveralls": "^1.0.3",
     "lodash-node": "^3.9.3",
     "mocha": "^2.2.5",
-    "should": "^6.0.3",
+    "should": "^7.1.0",
     "sinon": "^1.15.3",
     "through2": "^2.0.0"
   }
