@@ -15,7 +15,7 @@
     "cache"
   ],
   "scripts": {
-    "pretest": "eslint --config node_modules/@shinnn/eslintrc-node/rc.json --rule 'no-underscore-dangle: 0' index.js lib test.js",
+    "pretest": "eslint --config @shinnn/node-legacy --rule 'no-underscore-dangle: 0' --rule 'no-warning-comments: 0' index.js lib test.js",
     "test": "_mocha test.js",
     "coverage": "istanbul cover _mocha test.js",
     "coveralls": "${npm_package_scripts_coverage} && istanbul-coveralls"
@@ -36,7 +36,7 @@
     "vinyl": "^1.1.0"
   },
   "devDependencies": {
-    "@shinnn/eslintrc-node": "^1.0.2",
+    "@shinnn/eslint-config-node-legacy": "^1.0.0",
     "eslint": "^1.8.0",
     "istanbul": "^0.3.15",
     "istanbul-coveralls": "^1.0.3",

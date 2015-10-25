@@ -156,7 +156,7 @@ describe('gulp-cache', function() {
           return {
             ran: file.ran,
             cached: true,
-            contents: (file.contents || file._contents)
+            contents: file.contents || file._contents
           };
         }
       });
