@@ -4,7 +4,7 @@
 var crypto = require('crypto');
 var path = require('path');
 
-var _ = require('lodash-node');
+var _ = require('lodash');
 var File = require('vinyl');
 var should = require('should');
 var through = require('through2');
@@ -236,7 +236,7 @@ describe('gulp-cache', function() {
         fakeTask.cacheable.success.called.should.equal(true);
         fakeTask.cacheable.value.called.should.equal(true);
 
-        _.invoke([
+        _.invokeMap([
           fakeTask.cacheable.key,
           fakeTask.cacheable.success,
           fakeTask.cacheable.value,
@@ -297,7 +297,7 @@ describe('gulp-cache', function() {
         fakeTask.cacheable.value.called.should.equal(false);
         overriddenValue.called.should.equal(true);
 
-        _.invoke([
+        _.invokeMap([
           fakeTask.cacheable.key,
           fakeTask.cacheable.success,
           fakeTask.cacheable.value,
