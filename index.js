@@ -13,7 +13,7 @@ var VERSION = require('./package.json').version;
 var fileCache = new Cache({cacheDirName: 'gulp-cache'});
 
 function defaultKey(file) {
-  return [VERSION, file.path, file.contents.toString('base64')].join('');
+  return [VERSION, file.contents.toString('base64')].join('');
 }
 
 var defaultOptions = {

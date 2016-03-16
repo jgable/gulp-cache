@@ -475,7 +475,7 @@ describe('gulp-cache', function() {
           secondFile.path.should.equal(otherFilePath);
 
           // Check original handler was called
-          updatedFileHandler.called.should.equal(true);
+          updatedFileHandler.called.should.equal(false);
 
           done();
         });
