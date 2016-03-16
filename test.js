@@ -433,8 +433,9 @@ describe('gulp-cache', function() {
       proxied.end();
     });
 
-    it('sets the path on cached results', function(done) {
+    it('sets the cache based on file contents and path', function(done) {
       var filePath = path.join(process.cwd(), 'test', 'fixtures', 'in', 'file1.txt');
+      var otherFilePath = path.join(process.cwd(), 'test', 'fixtures', 'in', 'file2.txt');
       var updatedFileHandler = sandbox.spy(function(file, enc, cb) {
         file.contents = new Buffer('updatedcontent');
 
@@ -462,17 +463,18 @@ describe('gulp-cache', function() {
 
         updatedFileHandler.reset();
 
-        // Write the same file again, should be cached result
+        // Write a file with same content but different path, should be cached result
         proxied.write(new File({
+          path: otherFilePath,
           contents: new Buffer('abufferwiththiscontent')
         }));
 
         proxied.once('data', function(secondFile) {
-          // Check for same file path
+          // Check for different file path
           should.exist(secondFile.path);
-          secondFile.path.should.equal(filePath);
+          secondFile.path.should.equal(otherFilePath);
 
-          // Check original handler was not called.
+          // Check original handler was not called
           updatedFileHandler.called.should.equal(false);
 
           done();
