@@ -463,7 +463,7 @@ describe('gulp-cache', function() {
 
         updatedFileHandler.reset();
 
-        // Write a file with same content but different path, should not be cached result
+        // Write a file with same content but different path, should be cached result
         proxied.write(new File({
           path: otherFilePath,
           contents: new Buffer('abufferwiththiscontent')
@@ -474,7 +474,7 @@ describe('gulp-cache', function() {
           should.exist(secondFile.path);
           secondFile.path.should.equal(otherFilePath);
 
-          // Check original handler was called
+          // Check original handler was not called
           updatedFileHandler.called.should.equal(false);
 
           done();
