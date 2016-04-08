@@ -481,6 +481,54 @@ describe('gulp-cache', function() {
         });
       });
     });
+
+    it('keeps track of file path changes within the task', function(done) {
+      var filePath = path.join(process.cwd(), 'test', 'fixtures', 'in', 'file1.txt');
+      var outputFilePath = filePath.replace(/^(.*)\.txt$/i, '$1.txt2');
+      var updatedFileHandler = sandbox.spy(function(file, enc, cb) {
+        file.contents = new Buffer('updatedcontent');
+        file.path = outputFilePath; // Change file path
+        cb(null, file);
+      });
+
+      fakeTask = through.obj(updatedFileHandler);
+
+      // Create a proxied plugin stream
+      var proxied = cache(fakeTask);
+
+      // write the fake file to it
+      proxied.write(new File({
+        path: filePath,
+        contents: new Buffer('abufferwiththiscontent')
+      }));
+
+      // wait for the file to come back out
+      proxied.once('data', function(file) {
+        // Check original handler was called
+        updatedFileHandler.called.should.equal(true);
+
+        // Check it still has the changed output path
+        file.path.should.equal(outputFilePath);
+
+        updatedFileHandler.reset();
+
+        // Write same file again and validate cache result
+        proxied.write(new File({
+          path: filePath,
+          contents: new Buffer('abufferwiththiscontent')
+        }));
+
+        proxied.once('data', function(secondFile) {
+          // Check it still has the changed output path
+          secondFile.path.should.equal(outputFilePath);
+
+          // Check original handler was not called
+          updatedFileHandler.called.should.equal(false);
+
+          done();
+        });
+      });
+    });
   });
 
   it('does nothing when it tries to clear a directory', function(done) {
