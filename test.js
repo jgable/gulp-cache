@@ -485,8 +485,8 @@ describe('gulp-cache', function() {
     it('sets the cache based on file contents and path and keeps track of file path changes within the task', function(done) {
       var filePath = path.join(process.cwd(), 'test', 'fixtures', 'in', 'file1.txt');
       var otherFilePath = path.join(process.cwd(), 'test', 'fixtures', 'in', 'file2.txt');
-      var outputFilePath = function (path) {
-        return path.replace(/^(.*)\.txt$/i, '$1.txt2');
+      var outputFilePath = function(targetPath) {
+        return targetPath.replace(/^(.*)\.txt$/i, '$1.txt2');
       };
       var updatedFileHandler = sandbox.spy(function(file, enc, cb) {
         file.contents = new Buffer('updatedcontent');
@@ -515,7 +515,7 @@ describe('gulp-cache', function() {
 
         updatedFileHandler.reset();
 
-        // Write same file again and validate cache result
+        // Write another file with the same contents and validate cache result
         proxied.write(new File({
           path: otherFilePath,
           contents: new Buffer('abufferwiththiscontent')
@@ -536,9 +536,9 @@ describe('gulp-cache', function() {
             contents: new Buffer('abufferwiththiscontent')
           }));
 
-          proxied.once('data', function(secondFile) {
+          proxied.once('data', function(thirdFile) {
             // Check it still has the changed output path
-            secondFile.path.should.equal(outputFilePath(otherFilePath));
+            thirdFile.path.should.equal(outputFilePath(otherFilePath));
 
             // Check original handler was not called
             updatedFileHandler.called.should.equal(false);
