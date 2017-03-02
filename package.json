@@ -1,6 +1,6 @@
 {
   "name": "gulp-cache",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "A cache proxy plugin for Gulp",
   "repository": "jgable/gulp-cache",
   "author": "Jacob Gable <jacob.gable@gmail.com> (http://jacobgable.com)",
