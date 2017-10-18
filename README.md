@@ -122,7 +122,7 @@ var outputFiles = [
   ...
 ];
 ```
-* Or, do it manualy:
+* Or, do it manually:
 ```js
 var outputFiles = [
   new Vinyl({..., _cachedKey: inputFile._cachedKey}),
