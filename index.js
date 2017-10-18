@@ -3,7 +3,6 @@
 var Cache = require('cache-swap');
 var File = require('vinyl');
 var objectAssign = require('object-assign');
-var objectOmit = require('object.omit');
 var objectPick = require('object.pick');
 var PluginError = require('gulp-util').PluginError;
 var TaskProxy = require('./lib/TaskProxy');
@@ -33,11 +32,16 @@ var defaultOptions = {
     }
 
     var restoredFile = new File(restored);
-    var extraTaskProperties = objectOmit(restored, Object.keys(restoredFile));
 
     // Restore any properties that the original task put on the file;
     // but omit the normal properties of the file
-    return objectAssign(restoredFile, extraTaskProperties);
+    Object.keys(restored).forEach(function(key) {
+      if (File.isCustomProp(key)) {
+        restoredFile[key] = restored[key];
+      }
+    });
+
+    return restoredFile;
   },
   success: true,
   value: function(file) {

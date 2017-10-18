@@ -104,6 +104,33 @@ You can then run it with `gulp clear`.
 
 - Defaults to `'contents'` which will grab the resulting file.contents and store them as a string.
 
+## One-to-many caching
+
+To support one-to-many caching in Your Gulp-plugin, you should:
+
+* Use `clone` method, to save `_cachedKey` property:
+```js
+var outputFile1 = inputFile.clone({contents: false}),
+  outputFile2 = inputFile.clone({contents: false});
+
+outputFile1.contents = new Buffer(...);
+outputFile2.contents = new Buffer(...);
+
+var outputFiles = [
+  outputFile1,
+  outputFile2,
+  ...
+];
+```
+* Or, do it manually:
+```js
+var outputFiles = [
+  new Vinyl({..., _cachedKey: inputFile._cachedKey}),
+  new Vinyl({..., _cachedKey: inputFile._cachedKey}),
+  ...
+];
+```
+
 ## License
 
 [The MIT License (MIT)](./LICENSE)
