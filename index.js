@@ -61,9 +61,13 @@ var cacheTask = function(task, opts) {
   // Make sure we have some sane defaults
   opts = objectAssign({}, cacheTask.defaultOptions, opts);
 
+  TaskProxy.injectDoneEvent(task);
+
   return new Transform({
     objectMode: true,
     transform: function(file, enc, cb) {
+      var self = this;
+
       if (file.isNull()) {
         cb(null, file);
         return;
@@ -80,7 +84,10 @@ var cacheTask = function(task, opts) {
         opts: opts
       })
       .processFile().then(function(result) {
-        cb(null, result);
+        result.forEach(function(resultFile) {
+          self.push(resultFile);
+        });
+        cb(null);
       }, function(err) {
         cb(new PluginError('gulp-cache', err));
       });

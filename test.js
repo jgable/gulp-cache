@@ -490,7 +490,8 @@ describe('gulp-cache', function() {
       };
       var updatedFileHandler = sandbox.spy(function(file, enc, cb) {
         file.contents = new Buffer('updatedcontent');
-        file.path = outputFilePath(file.path); // Change file path
+        // Change file path
+        file.path = outputFilePath(file.path);
         cb(null, file);
       });
 
@@ -554,7 +555,8 @@ describe('gulp-cache', function() {
       var outputFilePath = filePath.replace(/^(.*)\.txt$/i, '$1.txt2');
       var updatedFileHandler = sandbox.spy(function(file, enc, cb) {
         file.contents = new Buffer('updatedcontent');
-        file.path = outputFilePath; // Change file path
+        // Change file path
+        file.path = outputFilePath;
         cb(null, file);
       });
 
