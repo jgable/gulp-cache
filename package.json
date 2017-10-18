@@ -1,6 +1,6 @@
 {
   "name": "gulp-cache",
-  "version": "0.4.6",
+  "version": "0.5.0",
   "description": "A cache proxy plugin for Gulp",
   "repository": "jgable/gulp-cache",
   "author": "Jacob Gable <jacob.gable@gmail.com> (http://jacobgable.com)",
@@ -15,7 +15,7 @@
     "cache"
   ],
   "scripts": {
-    "pretest": "eslint --config @shinnn/node-legacy --rule 'no-underscore-dangle: 0' --rule 'no-warning-comments: 0' --rule 'prefer-rest-params: 0' index.js lib test.js",
+    "pretest": "eslint index.js lib test.js",
     "test": "_mocha test.js",
     "coverage": "istanbul cover _mocha test.js"
   },
@@ -28,20 +28,19 @@
     "cache-swap": "^0.3.0",
     "gulp-util": "^3.0.7",
     "object-assign": "^4.0.1",
-    "object.omit": "^2.0.0",
     "object.pick": "^1.1.1",
     "readable-stream": "^2.0.4",
-    "try-json-parse": "^0.1.1",
-    "vinyl": "^2.0.2"
+    "try-json-parse": "^1.0.0",
+    "vinyl": "^2.1.0"
   },
   "devDependencies": {
     "@shinnn/eslint-config-node-legacy": "^3.0.0",
-    "eslint": "^3.19.0",
+    "eslint": "^4.9.0",
     "istanbul": "^0.4.1",
     "lodash": "^4.1.0",
-    "mocha": "^3.3.0",
-    "should": "^11.2.1",
-    "sinon": "^2.2.0",
+    "mocha": "^4.0.1",
+    "should": "^13.1.2",
+    "sinon": "^4.0.1",
     "through2": "^2.0.0"
   }
 }
