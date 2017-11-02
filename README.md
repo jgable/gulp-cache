@@ -17,30 +17,30 @@ import jshint from 'gulp-jshint';
 import cache from 'gulp-cache';
 
 gulp.task('lint', () =>
-	gulp.src('./lib/*.js')
-		.pipe(cache(jshint('.jshintrc'), {
-			key: makeHashKey,
-			// What on the result indicates it was successful
-			success(jshintedFile) {
-				return jshintedFile.jshint.success;
-			},
-			// What to store as the result of the successful action
-			value(jshintedFile) {
-				// Will be extended onto the file object on a cache hit next time task is ran
-				return {
-					jshint: jshintedFile.jshint
-				};
-			}
-		}))
-		.pipe(jshint.reporter('default'))
+    gulp.src('./lib/*.js')
+        .pipe(cache(jshint('.jshintrc'), {
+            key: makeHashKey,
+            // What on the result indicates it was successful
+            success(jshintedFile) {
+                return jshintedFile.jshint.success;
+            },
+            // What to store as the result of the successful action
+            value(jshintedFile) {
+                // Will be extended onto the file object on a cache hit next time task is ran
+                return {
+                    jshint: jshintedFile.jshint
+                };
+            }
+        }))
+        .pipe(jshint.reporter('default'))
 });
 
 const jsHintVersion = '2.4.1',
-	jshintOptions = fs.readFileSync('.jshintrc');
+    jshintOptions = fs.readFileSync('.jshintrc');
 
 function makeHashKey(file) {
-	// Key off the file contents, jshint version and options
-	return `${file.contents.toString('utf8')}${jshintVersion}${jshintOptions}`;
+    // Key off the file contents, jshint version and options
+    return `${file.contents.toString('utf8')}${jshintVersion}${jshintOptions}`;
 }
 ```
 
@@ -52,7 +52,7 @@ If you find yourself needing to clear the cache, there is a handy dandy `cache.c
 import cache from 'gulp-cache';
 
 gulp.task('clear', () =>
-	cache.clearAll()
+    cache.clearAll()
 );
 ```
 
@@ -111,23 +111,23 @@ To support one-to-many caching in Your Gulp-plugin, you should:
 * Use `clone` method, to save `_cachedKey` property:
 ```js
 const outputFile1 = inputFile.clone({contents: false}),
-	outputFile2 = inputFile.clone({contents: false});
+    outputFile2 = inputFile.clone({contents: false});
 
 outputFile1.contents = new Buffer(...);
 outputFile2.contents = new Buffer(...);
 
 const outputFiles = [
-	outputFile1,
-	outputFile2,
-	...
+    outputFile1,
+    outputFile2,
+    ...
 ];
 ```
 * Or, do it manually:
 ```js
 const outputFiles = [
-	new Vinyl({..., _cachedKey: inputFile._cachedKey}),
-	new Vinyl({..., _cachedKey: inputFile._cachedKey}),
-	...
+    new Vinyl({..., _cachedKey: inputFile._cachedKey}),
+    new Vinyl({..., _cachedKey: inputFile._cachedKey}),
+    ...
 ];
 ```
 
