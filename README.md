@@ -10,37 +10,37 @@ A temp file based caching proxy task for [gulp](http://gulpjs.com/).
 
 ## Usage
 
-```javascript
-var fs = require('fs');
+```js
+import fs from 'fs';
+import gulp from 'gulp';
+import jshint from 'gulp-jshint';
+import cache from 'gulp-cache';
 
-var gulp = require('gulp');
-var jshint = require('gulp-jshint');
-var cache = require('gulp-cache');
-
-gulp.task('lint', function() {
-  gulp.src('./lib/*.js')
-    .pipe(cache(jshint('.jshintrc'), {
-      key: makeHashKey,
-      // What on the result indicates it was successful
-      success: function (jshintedFile) {
-        return jshintedFile.jshint.success;
-      },
-      // What to store as the result of the successful action
-      value: function(jshintedFile) {
-        // Will be extended onto the file object on a cache hit next time task is ran
-        return {
-          jshint: jshintedFile.jshint
-        };
-      }
-    }))
-    .pipe(jshint.reporter('default'));
+gulp.task('lint', () =>
+	gulp.src('./lib/*.js')
+		.pipe(cache(jshint('.jshintrc'), {
+			key: makeHashKey,
+			// What on the result indicates it was successful
+			success(jshintedFile) {
+				return jshintedFile.jshint.success;
+			},
+			// What to store as the result of the successful action
+			value(jshintedFile) {
+				// Will be extended onto the file object on a cache hit next time task is ran
+				return {
+					jshint: jshintedFile.jshint
+				};
+			}
+		}))
+		.pipe(jshint.reporter('default'))
 });
 
-var jsHintVersion = '2.4.1',
-  jshintOptions = fs.readFileSync('.jshintrc');
+const jsHintVersion = '2.4.1',
+	jshintOptions = fs.readFileSync('.jshintrc');
+
 function makeHashKey(file) {
-  // Key off the file contents, jshint version and options
-  return [file.contents.toString('utf8'), jshintVersion, jshintOptions].join('');
+	// Key off the file contents, jshint version and options
+	return `${file.contents.toString('utf8')}${jshintVersion}${jshintOptions}`;
 }
 ```
 
@@ -49,11 +49,11 @@ function makeHashKey(file) {
 If you find yourself needing to clear the cache, there is a handy dandy `cache.clearAll()` method:
 
 ```js
-var cache = require('gulp-cache');
+import cache from 'gulp-cache';
 
-gulp.task('clear', function (done) {
-  return cache.clearAll(done);
-});
+gulp.task('clear', () =>
+	cache.clearAll()
+);
 ```
 
 You can then run it with `gulp clear`.
@@ -78,7 +78,7 @@ You can then run it with `gulp clear`.
 
 > [Optional] What to use to determine the uniqueness of an input file for this task.
 
-- Can return a string or a promise that resolves to a string.  Optionally, can accept a callback parameter for idiomatic node style asynchronous operations.  
+- Can return a string or a `Promise` that resolves to a string.  
 
 - The result of this method is converted to a unique MD5 hash automatically; no need to do this yourself.
 
@@ -88,7 +88,7 @@ You can then run it with `gulp clear`.
 
 > [Optional] How to determine if the resulting file was successful.
 
-- Must return a truthy value that is used to determine whether to cache the result of the task.
+- Must return a truthy value that is used to determine whether to cache the result of the task. `Promise` is supported.
 
 - Defaults to true, so any task results will be cached.
 
@@ -96,9 +96,9 @@ You can then run it with `gulp clear`.
 
 > [Optional] What to store as the cached result of the task.
 
-- Can be a function that returns an Object or a promise that resolves to an Object.  Optionally, can accept a callback for idiomatic node style asynchronous operations.
+- Can be a function that returns an Object or a `Promise `that resolves to an Object.
 
-- Can also be set to a string that will be picked (using `_.pick`) of the task result file.
+- Can also be set to a string that will be picked of the task result file.
 
 - The result of this method is run through `JSON.stringify` and stored in a temp file for later retrieval.
 
@@ -110,24 +110,24 @@ To support one-to-many caching in Your Gulp-plugin, you should:
 
 * Use `clone` method, to save `_cachedKey` property:
 ```js
-var outputFile1 = inputFile.clone({contents: false}),
-  outputFile2 = inputFile.clone({contents: false});
+const outputFile1 = inputFile.clone({contents: false}),
+	outputFile2 = inputFile.clone({contents: false});
 
 outputFile1.contents = new Buffer(...);
 outputFile2.contents = new Buffer(...);
 
-var outputFiles = [
-  outputFile1,
-  outputFile2,
-  ...
+const outputFiles = [
+	outputFile1,
+	outputFile2,
+	...
 ];
 ```
 * Or, do it manually:
 ```js
-var outputFiles = [
-  new Vinyl({..., _cachedKey: inputFile._cachedKey}),
-  new Vinyl({..., _cachedKey: inputFile._cachedKey}),
-  ...
+const outputFiles = [
+	new Vinyl({..., _cachedKey: inputFile._cachedKey}),
+	new Vinyl({..., _cachedKey: inputFile._cachedKey}),
+	...
 ];
 ```
 
@@ -135,4 +135,4 @@ var outputFiles = [
 
 [The MIT License (MIT)](./LICENSE)
 
-Copyright (c) 2014 - 2015 [Jacob Gable](http://jacobgable.com)
+Copyright (c) 2014 - 2017 [Jacob Gable](http://jacobgable.com)
