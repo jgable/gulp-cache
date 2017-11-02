@@ -44,7 +44,7 @@ function external(id) {
 export default [{
 	input:  'src/index.js',
 	watch:  {
-		include: 'src/**'
+		include: 'src/**/*.js'
 	},
 	plugins,
 	external,

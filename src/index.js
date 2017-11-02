@@ -42,8 +42,15 @@ function defaultRestore(restored) {
 }
 
 function defaultValue(file) {
+
+	const vinylProps = ['cwd', 'base', 'contents', 'stat', 'history', 'path'],
+		customProps = Object.keys(file).filter(File.isCustomProp);
+
 	// Convert from a File object (from vinyl) into a plain object
-	return pick(file, ['cwd', 'base', 'contents', 'stat', 'history', 'path']);
+	return pick(file, [
+		...vinylProps,
+		...customProps
+	]);
 }
 
 const defaultOptions = {
@@ -92,7 +99,8 @@ export default function plugin(task, inputOptions) {
 		});
 
 		signals.on('file', (file) => {
-			this.push(file.clone());
+			// console.log(file.path); // eslint-disable-line
+			this.push(file);
 		});
 
 		signals.on('done', () => {

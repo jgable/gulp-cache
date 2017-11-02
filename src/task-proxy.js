@@ -171,8 +171,8 @@ export default class TaskProxy {
 		}
 
 		if (restore) {
-			parsedContents = parsedContents.map(parsedFile =>
-				restore(parsedFile)
+			parsedContents = parsedContents.map(
+				parsedFile => restore(parsedFile)
 			);
 		}
 
@@ -182,7 +182,7 @@ export default class TaskProxy {
 		};
 	}
 
-	async _getValueFromResult(result) {
+	_getValueFromResult(result) {
 
 		const { value: getValue } = this.options;
 
@@ -232,14 +232,9 @@ export default class TaskProxy {
 			}
 
 			// Check if the task changed the file path
-			if (file.path !== originalPath) {
-				file.filePathChangedInsideTask = true;
-			}
+			file.filePathChangedInsideTask = file.path !== originalPath;
 			// Check if the task changed the base path
-			if (file.base !== originalBase) {
-				file.fileBaseChangedInsideTask = true;
-			}
-
+			file.fileBaseChangedInsideTask = file.base !== originalBase;
 			// Keep track of the original path
 			file.originalPath = originalPath;
 			// Keep track of the original base
