@@ -99,7 +99,6 @@ export default function plugin(task, inputOptions) {
 		});
 
 		signals.on('file', (file) => {
-			// console.log(file.path); // eslint-disable-line
 			this.push(file);
 		});
 
@@ -138,7 +137,7 @@ function clear(inputOptions) {
 		}
 
 		try {
-			await taskProxy.removeCachedResult();
+			await taskProxy.removeCachedResult(file);
 			next(null, file);
 			return;
 		} catch (err) {

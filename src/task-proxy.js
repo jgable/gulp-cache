@@ -10,11 +10,15 @@ function makeHash(key) {
 export default class TaskProxy {
 
 	constructor(task, inputOptions) {
+
 		this.task = task;
 		this.options = inputOptions;
 		this._cacheQueue = new Map();
 		this._removeListeners = [];
-		this.patchTask();
+
+		if (task) {
+			this.patchTask();
+		}
 	}
 
 	patchTask() {
@@ -51,8 +55,8 @@ export default class TaskProxy {
 
 		const cachedValueHasNormalPaths = cachedValueNotEmpty && cachedValue.every(
 			file =>
-				(!file.filePathChangedInsideTask || file.originalPath === inputFile.path)
-				&& (!file.fileBaseChangedInsideTask || file.originalBase === inputFile.base)
+				(!file.gulpCache$filePathChangedInsideTask || file.gulpCache$originalPath === inputFile.path)
+				&& (!file.gulpCache$fileBaseChangedInsideTask || file.gulpCache$originalBase === inputFile.base)
 		);
 
 		if (cachedValueHasNormalPaths) {
@@ -69,11 +73,11 @@ export default class TaskProxy {
 				});
 
 				// Restore the file path if it was set
-				if (cachedFile.path && cachedFile.filePathChangedInsideTask) {
+				if (cachedFile.path && cachedFile.gulpCache$filePathChangedInsideTask) {
 					file.path = cachedFile.path;
 				}
 				// Restore the file base if it was set
-				if (cachedFile.base && cachedFile.fileBaseChangedInsideTask) {
+				if (cachedFile.base && cachedFile.gulpCache$fileBaseChangedInsideTask) {
 					file.base = cachedFile.base;
 				}
 
@@ -81,10 +85,16 @@ export default class TaskProxy {
 			});
 
 			signals.emit('done');
+
+			this._removeListeners.push(() => {
+				// Remove all listeners from `signals`
+				signals.removeAllListeners();
+			});
+
 			return;
 		}
 
-		this._runProxiedTaskAndDeferCache(inputFile, cached.key, signals);
+		this._runProxiedTaskAndQueueCache(inputFile, cached.key, signals);
 	}
 
 	async flush(next) {
@@ -172,7 +182,18 @@ export default class TaskProxy {
 
 		if (restore) {
 			parsedContents = parsedContents.map(
-				parsedFile => restore(parsedFile)
+				(parsedFile) => {
+
+					const restoredFile = restore(parsedFile);
+
+					// Force restore service properties
+					restoredFile.gulpCache$filePathChangedInsideTask = parsedFile.gulpCache$filePathChangedInsideTask;
+					restoredFile.gulpCache$fileBaseChangedInsideTask = parsedFile.gulpCache$fileBaseChangedInsideTask;
+					restoredFile.gulpCache$originalPath = parsedFile.gulpCache$originalPath;
+					restoredFile.gulpCache$originalBase = parsedFile.gulpCache$originalBase;
+
+					return restoredFile;
+				}
 			);
 		}
 
@@ -182,7 +203,7 @@ export default class TaskProxy {
 		};
 	}
 
-	_getValueFromResult(result) {
+	async _getValueFromResult(result) {
 
 		const { value: getValue } = this.options;
 
@@ -207,9 +228,21 @@ export default class TaskProxy {
 			return result;
 		}
 
-		const files = await Promise.all(result.map(
-			file => this._getValueFromResult(file)
-		));
+		const { options } = this;
+
+		const files = (await Promise.all(result.map(
+			async ({ file, meta }) => {
+
+				if (options.success !== true && !(await options.success(file))) {
+					return null;
+				}
+
+				return Object.assign(
+					await this._getValueFromResult(file),
+					meta
+				);
+			}
+		))).filter(Boolean);
 
 		return this._addCached(
 			this.options.name,
@@ -218,33 +251,39 @@ export default class TaskProxy {
 		);
 	}
 
-	_runProxiedTaskAndDeferCache(file, cachedKey, signals = new EventEmitter()) {
+	async _queueCache(file, cachedKey, originalBase, originalPath) {
+
+		const { _cacheQueue } = this;
+
+		const item = {
+			file: file.clone({ contents: false }),
+			meta: {
+				// Check if the task changed the file path
+				gulpCache$filePathChangedInsideTask: file.path !== originalPath,
+				// Check if the task changed the base path
+				gulpCache$fileBaseChangedInsideTask: file.base !== originalBase,
+				// Keep track of the original path
+				gulpCache$originalPath:              originalPath,
+				// Keep track of the original base
+				gulpCache$originalBase:              originalBase
+			}
+		};
+
+		if (_cacheQueue.has(cachedKey)) {
+			_cacheQueue.get(cachedKey).push(item);
+		} else {
+			_cacheQueue.set(cachedKey, [item]);
+		}
+	}
+
+	_runProxiedTaskAndQueueCache(file, cachedKey, signals = new EventEmitter()) {
 
 		const originalBase = file.base,
 			originalPath = file.path;
 
-		signals.on('cache', async (file) => {
-
-			const { options, _cacheQueue } = this;
-
-			if (options.success !== true && !(await options.success(file))) {
-				return;
-			}
-
-			// Check if the task changed the file path
-			file.filePathChangedInsideTask = file.path !== originalPath;
-			// Check if the task changed the base path
-			file.fileBaseChangedInsideTask = file.base !== originalBase;
-			// Keep track of the original path
-			file.originalPath = originalPath;
-			// Keep track of the original base
-			file.originalBase = originalBase;
-
-			if (_cacheQueue.has(cachedKey)) {
-				_cacheQueue.get(cachedKey).push(file);
-			} else {
-				_cacheQueue.set(cachedKey, [file]);
-			}
+		signals.on('cache', (file) => {
+			this._queueCache(file, cachedKey, originalBase, originalPath);
+			signals.emit('file', file);
 		});
 
 		return this._runProxiedTask(file, cachedKey, signals);
@@ -252,7 +291,8 @@ export default class TaskProxy {
 
 	_runProxiedTask(file, cachedKey, signals = new EventEmitter()) {
 
-		const { task } = this;
+		const { task } = this,
+			hasCacheListener = Boolean(signals.listenerCount('cache'));
 
 		function onError(err) {
 			signals.emit('error', err);
@@ -264,8 +304,11 @@ export default class TaskProxy {
 				return;
 			}
 
-			signals.emit('cache', datum.clone({ contents: true }));
-			signals.emit('file', datum);
+			if (hasCacheListener) {
+				signals.emit('cache', datum);
+			} else {
+				signals.emit('file', datum);
+			}
 		}
 
 		function onTransformed() {

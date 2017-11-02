@@ -14,11 +14,11 @@
     "node": ">=4.0.0"
   },
   "scripts": {
-    "lint": "eslint --cache 'src/**/*.js'",
-    "test": "_mocha test.js",
+    "lint": "eslint --cache 'src/**/*.js' 'test/**/*.js'",
+    "test": "npm run lint && _mocha test/index.js",
     "build": "rollup -c",
     "watch": "rollup -c -w",
-    "coverage": "istanbul cover _mocha test.js",
+    "coverage": "istanbul cover _mocha test/index.js",
     "prepublishOnly": "npm run build"
   },
   "repository": {
