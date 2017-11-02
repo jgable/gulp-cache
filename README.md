@@ -66,7 +66,7 @@ You can then run it with `gulp clear`.
 
 - Defaults to `new Cache({ cacheDirName: 'gulp-cache' })`
 
-- Create your own with `new cache.Cache({ cacheDirName: 'custom-cache' })`
+- Create your own with [`new cache.Cache({ cacheDirName: 'custom-cache' })`](https://github.com/jgable/cache-swap)
 
 #### `name`
 
