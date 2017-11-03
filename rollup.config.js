@@ -18,11 +18,14 @@ const plugins = [
 		babelrc:        false,
 		exclude:        'node_modules/**'
 	}, pkg.babel, {
-		presets: pkg.babel.presets.map(_ => (
-			_ == 'env'
-				? 'es2015-rollup'
-				: _
-		))
+		presets: pkg.babel.presets.map((preset) => {
+
+			if (Array.isArray(preset) && preset[0] == 'env') {
+				preset[1].modules = false;
+			}
+
+			return preset
+		})
 	})),
 	resolve({
 		preferBuiltins: true
