@@ -1,6 +1,7 @@
 # gulp-cache
 
 [![NPM version](https://img.shields.io/npm/v/gulp-cache.svg)](https://www.npmjs.com/package/gulp-cache)
+[![Node version](https://img.shields.io/node/v/gulp-cache.svg)](https://nodejs.org)
 [![status](https://travis-ci.org/jgable/gulp-cache.svg?branch=master)](https://travis-ci.org/jgable/gulp-cache)
 [![Coverage Status](https://img.shields.io/coveralls/jgable/gulp-cache.svg)](https://coveralls.io/r/jgable/gulp-cache)
 [![Dependency Status](https://img.shields.io/david/jgable/gulp-cache.svg)](https://david-dm.org/jgable/gulp-cache)
