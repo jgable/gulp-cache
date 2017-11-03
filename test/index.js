@@ -408,6 +408,94 @@ describe('gulp-cache', () => {
 			}));
 		});
 
+		it('can store one-to-many cache', (done) => {
+
+			const updatedFileHandler = sandbox.spy(function each(file, enc, cb) {
+
+				const outputFile1 = file.clone({ contents: false }),
+					outputFile2 = file.clone({ contents: false });
+
+				outputFile1.contents = new Buffer(`${String(file.contents)}-1`);
+				outputFile2.contents = new Buffer(`${String(file.contents)}-2`);
+
+				this.push(outputFile1);
+				this.push(outputFile2);
+
+				cb(null);
+			});
+
+			const targetFile = new File({
+				contents: new Buffer('abufferwiththiscontent')
+			});
+
+			fakeTask = through.obj(updatedFileHandler);
+
+			const opts = {
+				value:   sandbox.spy(cache.defaultOptions.value),
+				restore: sandbox.spy(cache.defaultOptions.restore)
+			};
+
+			// Create a proxied plugin stream
+			let proxied = cache(fakeTask, opts),
+				count = 0;
+
+			cacheStep();
+
+			function cacheStep() {
+
+				proxied.on('data', (file) => {
+
+					if (count == 0) {
+						String(file.contents).should.equal('abufferwiththiscontent-1');
+					} else {
+						String(file.contents).should.equal('abufferwiththiscontent-2');
+					}
+
+					count++;
+				});
+
+				proxied.on('end', () => {
+					count.should.equal(2);
+					opts.value.called.should.equal(true);
+					opts.restore.called.should.equal(false);
+					fromCacheStep();
+				});
+
+				// write the fake file to it
+				proxied.end(targetFile);
+			}
+
+			function fromCacheStep() {
+
+				opts.value.reset();
+				opts.restore.reset();
+
+				proxied = cache(fakeTask, opts);
+				count = 0;
+
+				proxied.on('data', (file) => {
+
+					if (count == 0) {
+						String(file.contents).should.equal('abufferwiththiscontent-1');
+					} else {
+						String(file.contents).should.equal('abufferwiththiscontent-2');
+					}
+
+					count++;
+				});
+
+				proxied.on('end', () => {
+					count.should.equal(2);
+					opts.value.called.should.equal(false);
+					opts.restore.called.should.equal(true);
+					done();
+				});
+
+				// write the fake file to it
+				proxied.end(targetFile);
+			}
+		});
+
 		it('does not throw memory leak warning when proxying tasks', (done) => {
 			fakeTask = through.obj((file, enc, cb) => {
 				setTimeout(() => {

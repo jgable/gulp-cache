@@ -101,14 +101,21 @@ export default class TaskProxy {
 
 		const { task } = this;
 
-		if (typeof task._flush == 'function') {
-			task._flush(async (...args) => {
+		try {
+
+			if (typeof task._flush == 'function') {
+				task._flush(async (...args) => {
+					await this._flush();
+					next(...args);
+				});
+			} else {
 				await this._flush();
-				next(...args);
-			});
-		} else {
-			await this._flush();
-			next();
+				next();
+				return;
+			}
+
+		} catch (err) {
+			next(err);
 			return;
 		}
 	}

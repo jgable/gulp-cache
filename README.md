@@ -110,8 +110,8 @@ To support one-to-many caching in Your Gulp-plugin, you should:
 
 * Use `clone` method, to save `_cachedKey` property:
 ```js
-const outputFile1 = inputFile.clone({contents: false}),
-    outputFile2 = inputFile.clone({contents: false});
+const outputFile1 = inputFile.clone({ contents: false }),
+    outputFile2 = inputFile.clone({ contents: false });
 
 outputFile1.contents = new Buffer(...);
 outputFile2.contents = new Buffer(...);
