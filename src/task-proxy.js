@@ -51,17 +51,17 @@ export default class TaskProxy {
 		// If we found a cached value
 		// The path of the cache key should also be identical to the original one when the file path changed inside the task
 		const cachedValue = cached.value,
-			cachedValueNotEmpty = Array.isArray(cachedValue) && cachedValue.length;
+			cachedValueIsEmpty = !Array.isArray(cachedValue) || !cachedValue.length;
 
-		const cachedValueHasNormalPaths = cachedValueNotEmpty && cachedValue.every(
+		const cachedValuesWithNormalPaths = cachedValueIsEmpty ? [] : cachedValue.filter(
 			file =>
 				(!file.gulpCache$filePathChangedInsideTask || file.gulpCache$originalPath === inputFile.path)
 				&& (!file.gulpCache$fileBaseChangedInsideTask || file.gulpCache$originalBase === inputFile.base)
 		);
 
-		if (cachedValueHasNormalPaths) {
+		if (cachedValuesWithNormalPaths.length) {
 
-			cachedValue.forEach((cachedFile) => {
+			cachedValuesWithNormalPaths.forEach((cachedFile) => {
 				// Extend the cached value onto the file, but don't overwrite original path info
 				const file = new File({
 					// custom properties
@@ -80,6 +80,11 @@ export default class TaskProxy {
 				if (cachedFile.base && cachedFile.gulpCache$fileBaseChangedInsideTask) {
 					file.base = cachedFile.base;
 				}
+
+				Reflect.deleteProperty(file, 'gulpCache$filePathChangedInsideTask');
+				Reflect.deleteProperty(file, 'gulpCache$fileBaseChangedInsideTask');
+				Reflect.deleteProperty(file, 'gulpCache$originalPath');
+				Reflect.deleteProperty(file, 'gulpCache$originalBase');
 
 				signals.emit('file', file);
 			});
@@ -310,6 +315,8 @@ export default class TaskProxy {
 			if (datum._cachedKey !== cachedKey) {
 				return;
 			}
+
+			Reflect.deleteProperty(datum, '_cachedKey');
 
 			if (hasCacheListener) {
 				signals.emit('cache', datum);
