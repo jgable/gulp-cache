@@ -4,8 +4,10 @@ git:
 branches:
   except: /^v\d/
 language: node_js
-node_js: stable
-after_script:
-  - npm install istanbul-coveralls
-  - npm run-script coverage
-  - node node_modules/.bin/istanbul-coveralls
+node_js:
+  - "node"
+  - "4"
+cache:
+  directories:
+    - node_modules
+after_success: npm run coverage
