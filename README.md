@@ -1,13 +1,35 @@
 # gulp-cache
 
-[![NPM version](https://img.shields.io/npm/v/gulp-cache.svg)](https://www.npmjs.com/package/gulp-cache)
-[![Node version](https://img.shields.io/node/v/gulp-cache.svg)](https://nodejs.org)
-[![status](https://travis-ci.org/jgable/gulp-cache.svg?branch=master)](https://travis-ci.org/jgable/gulp-cache)
-[![Coverage Status](https://img.shields.io/coveralls/jgable/gulp-cache.svg)](https://coveralls.io/r/jgable/gulp-cache)
-[![Dependency Status](https://img.shields.io/david/jgable/gulp-cache.svg)](https://david-dm.org/jgable/gulp-cache)
-[![devDependency Status](https://img.shields.io/david/dev/jgable/gulp-cache.svg)](https://david-dm.org/jgable/gulp-cache#info=devDependencies)
+[![NPM version][npm]][npm-url]
+[![Node version][node]][node-url]
+[![Dependency status][deps]][deps-url]
+[![Build status][build]][build-url]
+[![Coverage status][coverage]][coverage-url]
+
+[npm]: https://img.shields.io/npm/v/gulp-cache.svg
+[npm-url]: https://www.npmjs.com/package/gulp-cache
+
+[node]: https://img.shields.io/node/v/gulp-cache.svg
+[node-url]: https://nodejs.org
+
+[deps]: https://img.shields.io/david/jgable/gulp-cache.svg
+[deps-url]: https://david-dm.org/jgable/gulp-cache
+
+[build]: https://travis-ci.org/jgable/gulp-cache.svg?branch=master
+[build-url]: https://travis-ci.org/jgable/gulp-cache
+
+[coverage]: https://img.shields.io/coveralls/jgable/gulp-cache.svg
+[coverage-url]: https://coveralls.io/r/jgable/gulp-cache
 
 A temp file based caching proxy task for [gulp](http://gulpjs.com/).
+
+## Install
+
+```sh
+npm i -D gulp-cache
+# or
+yarn add -D gulp-cache
+```
 
 ## Usage
 
