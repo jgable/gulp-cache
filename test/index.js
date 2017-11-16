@@ -424,6 +424,8 @@ describe('gulp-cache', () => {
 				cb(null);
 			});
 
+			const pushedFilesCount = 2;
+
 			const targetFile = new File({
 				contents: new Buffer('abufferwiththiscontent')
 			});
@@ -455,7 +457,7 @@ describe('gulp-cache', () => {
 				});
 
 				proxied.on('end', () => {
-					count.should.equal(2);
+					count.should.equal(pushedFilesCount);
 					opts.value.called.should.equal(true);
 					opts.restore.called.should.equal(false);
 					fromCacheStep();
@@ -485,7 +487,7 @@ describe('gulp-cache', () => {
 				});
 
 				proxied.on('end', () => {
-					count.should.equal(2);
+					count.should.equal(pushedFilesCount);
 					opts.value.called.should.equal(false);
 					opts.restore.called.should.equal(true);
 					done();
@@ -497,12 +499,16 @@ describe('gulp-cache', () => {
 		});
 
 		it('does not throw memory leak warning when proxying tasks', (done) => {
+
+			const delay = 10,
+				filesCount = 30;
+
 			fakeTask = through.obj((file, enc, cb) => {
 				setTimeout(() => {
 					file.contents = new Buffer(`${file.contents.toString()} updated`);
 
 					cb(null, file);
-				}, 10);
+				}, delay);
 			});
 
 			const proxied = cache(fakeTask);
@@ -517,14 +523,14 @@ describe('gulp-cache', () => {
 					processedCount += 1;
 				})
 				.on('end', () => {
-					processedCount.should.equal(30);
+					processedCount.should.equal(filesCount);
 					errSpy.called.should.equal(false, 'Called console.error');
 					fakeTask._maxListeners.should.equal(origMaxListeners || 0);
 
 					done();
 				});
 
-			_.times(30, i => new File({
+			_.times(filesCount, i => new File({
 				contents: new Buffer(`Test File ${i}`)
 			})).forEach((file) => {
 				proxied.write(file);
