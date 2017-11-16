@@ -44,7 +44,7 @@ function external(id) {
 	);
 }
 
-export default [{
+export default {
 	input:  'src/index.js',
 	watch:  {
 		include: 'src/**/*.js'
@@ -56,4 +56,4 @@ export default [{
 		format:    'cjs',
 		sourcemap: true
 	}
-}];
+};

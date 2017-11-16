@@ -1,3 +1,6 @@
 module.exports = {
-	'extends': 'trigen/base'
+	'extends': 'trigen/base',
+	'env': {
+		'node': true
+	}
 };

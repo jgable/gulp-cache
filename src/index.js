@@ -3,8 +3,8 @@ import through from 'through2';
 import Cache from 'cache-swap';
 import File from 'vinyl';
 import pick from 'object.pick';
-import TaskProxy from './task-proxy';
 import { version as VERSION } from '../package.json';
+import TaskProxy from './task-proxy';
 
 const fileCache = new Cache({ cacheDirName: 'gulp-cache' });
 

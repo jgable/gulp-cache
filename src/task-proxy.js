@@ -3,6 +3,9 @@ import crypto from 'crypto';
 import File from 'vinyl';
 import pick from 'object.pick';
 
+const whitespaces = 2,
+	eventListenersCount = 3;
+
 function makeHash(key) {
 	return crypto.createHash('md5').update(key).digest('hex');
 }
@@ -259,7 +262,7 @@ export default class TaskProxy {
 		return this._addCached(
 			this.options.name,
 			key,
-			JSON.stringify(files, null, 2)
+			JSON.stringify(files, null, whitespaces)
 		);
 	}
 
@@ -336,7 +339,7 @@ export default class TaskProxy {
 			task.removeListener('data', onData);
 
 			// Reduce the maxListeners back down
-			task.setMaxListeners(task._maxListeners - 3);
+			task.setMaxListeners(task._maxListeners - eventListenersCount);
 
 			// Remove all listeners from `signals`
 			signals.removeAllListeners();
@@ -345,7 +348,7 @@ export default class TaskProxy {
 		// Bump up max listeners to prevent memory leak warnings
 		const currMaxListeners = task._maxListeners || 0;
 
-		task.setMaxListeners(currMaxListeners + 3);
+		task.setMaxListeners(currMaxListeners + eventListenersCount);
 
 		task.on('data', onData);
 		task.once('gulp-cache:transformed', onTransformed);

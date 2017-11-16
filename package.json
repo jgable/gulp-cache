@@ -9,6 +9,13 @@
     "Dan Green <danon0404@gmail.com> (https://trigen.pro)"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jgable/gulp-cache.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jgable/gulp-cache/issues"
+  },
   "main": "lib/index.js",
   "engines": {
     "node": ">=6.0.0"
@@ -20,13 +27,6 @@
     "watch": "rollup -c -w",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "prepublishOnly": "npm run build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jgable/gulp-cache.git"
-  },
-  "bugs": {
-    "url": "https://github.com/jgable/gulp-cache/issues"
   },
   "keywords": [
     "gulpplugin",
@@ -51,7 +51,7 @@
     "coveralls": "^3.0.0",
     "escope": "^3.6.0",
     "eslint": "^4.10.0",
-    "eslint-config-trigen": "^1.2.4",
+    "eslint-config-trigen": "^2.2.0",
     "lodash": "^4.17.4",
     "mocha": "^4.0.1",
     "nyc": "^11.3.0",
