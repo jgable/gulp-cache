@@ -36,8 +36,8 @@
   "dependencies": {
     "babel-runtime": "^6.26.0",
     "cache-swap": "^0.3.0",
-    "gulp-util": "^3.0.8",
     "object.pick": "^1.3.0",
+    "plugin-error": "^0.1.2",
     "through2": "^2.0.3",
     "vinyl": "^2.1.0"
   },
