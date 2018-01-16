@@ -24,7 +24,7 @@ const plugins = [
 				preset[1].modules = false;
 			}
 
-			return preset
+			return preset;
 		})
 	})),
 	resolve({
