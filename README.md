@@ -35,7 +35,7 @@ yarn add -D gulp-cache
 ```js
 /**
 * @param gulp_action the action to run, if not found in cache
-* @param options see section bellow for posible options.
+* @param options see section below for possible options.
 */
 cache(gulp_action, options)
 ```
