@@ -1,0 +1,3 @@
+{
+	"src/**/*.js": ["eslint --cache", "git add"]
+}
