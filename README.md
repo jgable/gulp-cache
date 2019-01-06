@@ -43,7 +43,7 @@ Target plugin, the output of which will be cached.
 
 Options for `gulp-cache` plugin.
 
-##### `fileCache`
+##### `options.fileCache`
 
 > [Optional] Where to store the cache objects
 
@@ -51,13 +51,13 @@ Options for `gulp-cache` plugin.
 
 - Create your own with [`new cache.Cache({ cacheDirName: 'custom-cache' })`](https://github.com/jgable/cache-swap)
 
-##### `name`
+##### `options.name`
 
 > [Optional] The name of the bucket which stores the cached objects
 
 - Defaults to `default`
 
-##### `key`
+##### `options.key`
 
 > [Optional] What to use to determine the uniqueness of an input file for this task.
 
@@ -67,7 +67,7 @@ Options for `gulp-cache` plugin.
 
 - Defaults to `file.contents` if a Buffer, or `undefined` if a Stream.
 
-##### `success`
+##### `options.success`
 
 > [Optional] How to determine if the resulting file was successful.
 
@@ -75,7 +75,7 @@ Options for `gulp-cache` plugin.
 
 - Defaults to true, so any task results will be cached.
 
-##### `value`
+##### `options.value`
 
 > [Optional] What to store as the cached result of the task.
 
