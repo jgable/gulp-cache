@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 import path from 'path';
-import _ from 'lodash';
 import File from 'vinyl';
 import through from 'through2';
 import sinon from 'sinon';
@@ -14,7 +13,7 @@ describe('gulp-cache', () => {
 
 	beforeEach((done) => {
 
-		sandbox = sinon.sandbox.create();
+		sandbox = sinon.createSandbox();
 
 		// Spy on the fakeFileHandler to check if it gets called later
 		fakeFileHandler = sandbox.spy((file, enc, cb) => {
@@ -126,8 +125,6 @@ describe('gulp-cache', () => {
 				proxied.once('data', (file2) => {
 					expect(file2.isBuffer()).toBe(true);
 					expect(String(file2.contents)).toBe('abufferwiththiscontent-modified');
-
-					done();
 				});
 
 				proxied.end(new File({
@@ -138,6 +135,8 @@ describe('gulp-cache', () => {
 			proxied.write(new File({
 				contents: new Buffer('abufferwiththiscontent')
 			}));
+
+			proxied.on('end', done);
 		});
 
 		it('can proxy a task with specific options', (done) => {
@@ -178,7 +177,7 @@ describe('gulp-cache', () => {
 				expect(fakeFileHandler.called).toEqual(true);
 
 				// Reset for the second run through
-				fakeFileHandler.reset();
+				fakeFileHandler.resetHistory();
 				// Refresh proxied
 				proxied = cache(fakeTask, opts);
 				// Write the same file again, should be cached result
@@ -232,12 +231,10 @@ describe('gulp-cache', () => {
 				expect(fakeTask.cacheable.success.called).toEqual(true);
 				expect(fakeTask.cacheable.value.called).toEqual(true);
 				// Reset for the second run through
-				_.invokeMap([
-					fakeTask.cacheable.key,
-					fakeTask.cacheable.success,
-					fakeTask.cacheable.value,
-					fakeFileHandler
-				], 'reset');
+				fakeTask.cacheable.key.resetHistory();
+				fakeTask.cacheable.success.resetHistory();
+				fakeTask.cacheable.value.resetHistory();
+				fakeFileHandler.resetHistory();
 				// Refresh proxied
 				proxied = cache(fakeTask);
 				// Write the same file again, should be cached result
@@ -294,13 +291,11 @@ describe('gulp-cache', () => {
 				expect(fakeTask.cacheable.value.called).toEqual(false);
 				expect(overriddenValue.called).toEqual(true);
 
-				_.invokeMap([
-					fakeTask.cacheable.key,
-					fakeTask.cacheable.success,
-					fakeTask.cacheable.value,
-					overriddenValue,
-					fakeFileHandler
-				], 'reset');
+				fakeTask.cacheable.key.resetHistory();
+				fakeTask.cacheable.success.resetHistory();
+				fakeTask.cacheable.value.resetHistory();
+				overriddenValue.resetHistory();
+				fakeFileHandler.resetHistory();
 
 				// Refresh proxied
 				proxied = cache(fakeTask, opts);
@@ -381,7 +376,7 @@ describe('gulp-cache', () => {
 				// Check original handler was called
 				expect(updatedFileHandler.called).toEqual(true);
 
-				updatedFileHandler.reset();
+				updatedFileHandler.resetHistory();
 
 				// Refresh proxied
 				proxied = cache(fakeTask);
@@ -460,8 +455,8 @@ describe('gulp-cache', () => {
 
 			function fromCacheStep() {
 
-				opts.value.reset();
-				opts.restore.reset();
+				opts.value.resetHistory();
+				opts.restore.resetHistory();
 
 				proxied = cache(fakeTask, opts);
 				count = 0;
@@ -519,10 +514,12 @@ describe('gulp-cache', () => {
 					done();
 				});
 
-			_.times(filesCount, i => new File({
-				contents: new Buffer(`Test File ${i}`)
-			})).forEach((file) => {
-				proxied.write(file);
+			Array.from({
+				length: filesCount
+			}).forEach((_, i) => {
+				proxied.write(new File({
+					contents: new Buffer(`Test File ${i}`)
+				}));
 			});
 
 			proxied.end();
@@ -556,7 +553,7 @@ describe('gulp-cache', () => {
 				// Check the path is on there
 				expect(file.path).toEqual(filePath);
 
-				updatedFileHandler.reset();
+				updatedFileHandler.resetHistory();
 
 				// Refresh proxied
 				proxied = cache(fakeTask);
@@ -610,7 +607,7 @@ describe('gulp-cache', () => {
 				// Check it still has the changed output path
 				expect(file.path).toEqual(outputFilePath(filePath));
 
-				updatedFileHandler.reset();
+				updatedFileHandler.resetHistory();
 
 				// Refresh proxied
 				proxied = cache(fakeTask);
@@ -628,7 +625,7 @@ describe('gulp-cache', () => {
 					// Check original handler was called
 					expect(updatedFileHandler.called).toEqual(true);
 
-					updatedFileHandler.reset();
+					updatedFileHandler.resetHistory();
 
 					// Refresh proxied
 					proxied = cache(fakeTask);
@@ -681,7 +678,7 @@ describe('gulp-cache', () => {
 				// Check it still has the changed output path
 				expect(file.path).toBe(outputFilePath);
 
-				updatedFileHandler.reset();
+				updatedFileHandler.resetHistory();
 
 				// Refresh proxied
 				proxied = cache(fakeTask);

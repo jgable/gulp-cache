@@ -1,4 +1,13 @@
 {
 	"testEnvironment": "node",
-	"testRegex": "/test/.*\\.spec\\.js$"
+	"testRegex": "/test/.*\\.spec\\.js$",
+	"collectCoverage": true,
+	"collectCoverageFrom": [
+		"src/**/*.js",
+		"!**/node_modules/**"
+	],
+	"coverageReporters": [
+		"lcovonly",
+		"text"
+	]
 }
