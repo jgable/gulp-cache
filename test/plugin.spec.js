@@ -14,7 +14,7 @@ describe('gulp-cache', () => {
 
 	beforeEach((done) => {
 
-		sandbox = sinon.createSandbox();
+		sandbox = sinon.sandbox.create();
 
 		// Spy on the fakeFileHandler to check if it gets called later
 		fakeFileHandler = sandbox.spy((file, enc, cb) => {
@@ -178,7 +178,7 @@ describe('gulp-cache', () => {
 				expect(fakeFileHandler.called).toEqual(true);
 
 				// Reset for the second run through
-				fakeFileHandler.resetHistory();
+				fakeFileHandler.reset();
 				// Refresh proxied
 				proxied = cache(fakeTask, opts);
 				// Write the same file again, should be cached result
@@ -381,7 +381,7 @@ describe('gulp-cache', () => {
 				// Check original handler was called
 				expect(updatedFileHandler.called).toEqual(true);
 
-				updatedFileHandler.resetHistory();
+				updatedFileHandler.reset();
 
 				// Refresh proxied
 				proxied = cache(fakeTask);
@@ -460,8 +460,8 @@ describe('gulp-cache', () => {
 
 			function fromCacheStep() {
 
-				opts.value.resetHistory();
-				opts.restore.resetHistory();
+				opts.value.reset();
+				opts.restore.reset();
 
 				proxied = cache(fakeTask, opts);
 				count = 0;
@@ -556,7 +556,7 @@ describe('gulp-cache', () => {
 				// Check the path is on there
 				expect(file.path).toEqual(filePath);
 
-				updatedFileHandler.resetHistory();
+				updatedFileHandler.reset();
 
 				// Refresh proxied
 				proxied = cache(fakeTask);
@@ -610,7 +610,7 @@ describe('gulp-cache', () => {
 				// Check it still has the changed output path
 				expect(file.path).toEqual(outputFilePath(filePath));
 
-				updatedFileHandler.resetHistory();
+				updatedFileHandler.reset();
 
 				// Refresh proxied
 				proxied = cache(fakeTask);
@@ -628,7 +628,7 @@ describe('gulp-cache', () => {
 					// Check original handler was called
 					expect(updatedFileHandler.called).toEqual(true);
 
-					updatedFileHandler.resetHistory();
+					updatedFileHandler.reset();
 
 					// Refresh proxied
 					proxied = cache(fakeTask);
@@ -681,7 +681,7 @@ describe('gulp-cache', () => {
 				// Check it still has the changed output path
 				expect(file.path).toBe(outputFilePath);
 
-				updatedFileHandler.resetHistory();
+				updatedFileHandler.reset();
 
 				// Refresh proxied
 				proxied = cache(fakeTask);
