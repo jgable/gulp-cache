@@ -31,6 +31,15 @@ npm i -D gulp-cache
 yarn add -D gulp-cache
 ```
 
+## Arguments
+```js
+/**
+* @param gulp_action the action to run, if not found in cache
+* @param options see section below for possible options.
+*/
+cache(gulp_action, options)
+```
+
 ## Usage
 
 ```js
@@ -41,20 +50,25 @@ import cache from 'gulp-cache';
 
 gulp.task('lint', () =>
     gulp.src('./lib/*.js')
-        .pipe(cache(jshint('.jshintrc'), {
-            key: makeHashKey,
-            // What on the result indicates it was successful
-            success(jshintedFile) {
-                return jshintedFile.jshint.success;
-            },
-            // What to store as the result of the successful action
-            value(jshintedFile) {
-                // Will be extended onto the file object on a cache hit next time task is ran
-                return {
-                    jshint: jshintedFile.jshint
-                };
+        .pipe(cache(
+            // Gulp action to run if not found in cache
+            jshint('.jshintrc'),
+            // Option for cache
+            {
+                key: makeHashKey,
+                // What on the result indicates it was successful
+                success(jshintedFile) {
+                    return jshintedFile.jshint.success;
+                },
+                // What to store as the result of the successful action
+                value(jshintedFile) {
+                    // Will be extended onto the file object on a cache hit next time task is ran
+                    return {
+                        jshint: jshintedFile.jshint
+                    };
+                }
             }
-        }))
+        ))
         .pipe(jshint.reporter('default'))
 });
 
