@@ -79,7 +79,7 @@ Options for `gulp-cache` plugin.
 
 > [Optional] What to store as the cached result of the task.
 
-- Can be a function that returns an Object or a `Promise `that resolves to an Object.
+- Can be a function that returns an Object or a `Promise` that resolves to an Object.
 
 - Can also be set to a string that will be picked of the task result file.
 
