@@ -43,8 +43,8 @@ function defaultRestore(restored) {
 
 function defaultValue(file) {
 
-	const vinylProps = ['cwd', 'base', 'contents', 'stat', 'history', 'path'],
-		customProps = Object.keys(file).filter(File.isCustomProp);
+	const vinylProps = ['cwd', 'base', 'contents', 'stat', 'history', 'path'];
+	const customProps = Object.keys(file).filter(File.isCustomProp);
 
 	// Convert from a File object (from vinyl) into a plain object
 	return pick(file, [
@@ -77,7 +77,6 @@ export default function plugin(task, inputOptions) {
 		...task.cacheable,
 		...inputOptions
 	};
-
 	const taskProxy = new TaskProxy(task, options);
 
 	function each(file, enc, next) {
@@ -121,7 +120,6 @@ function clear(inputOptions) {
 		...plugin.defaultOptions,
 		...inputOptions
 	};
-
 	const taskProxy = new TaskProxy(null, options);
 
 	async function each(file, enc, next) {
