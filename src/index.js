@@ -66,7 +66,7 @@ plugin.Cache = Cache;
 plugin.fileCache = fileCache;
 plugin.defaultOptions = defaultOptions;
 
-export default function plugin(task, inputOptions) {
+export default function plugin(task, inputOptions = {}) {
 	// Check for required task option
 	if (!task) {
 		throw new PluginError('gulp-cache', 'Must pass a task to cache()');
@@ -74,7 +74,7 @@ export default function plugin(task, inputOptions) {
 
 	const options = {
 		...plugin.defaultOptions,
-		...task.cacheable,
+		...(task.cacheable || {}),
 		...inputOptions
 	};
 	const taskProxy = new TaskProxy(task, options);
