@@ -2,7 +2,7 @@
 
 [![NPM version][npm]][npm-url]
 [![Node version][node]][node-url]
-[![Dependency status][deps]][deps-url]
+[![Dependencies status][deps]][deps-url]
 [![Build status][build]][build-url]
 [![Coverage status][coverage]][coverage-url]
 
