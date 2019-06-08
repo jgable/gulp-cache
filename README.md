@@ -212,4 +212,4 @@ const outputFiles = [
 
 [The MIT License (MIT)](./LICENSE)
 
-Copyright (c) 2014 - 2017 [Jacob Gable](http://jacobgable.com)
+Copyright (c) 2014 - present [Jacob Gable](http://jacobgable.com)

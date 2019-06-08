@@ -6,10 +6,15 @@
 	"env": {
 		"test": {
 			"presets": [
-				["babel-preset-trigen", {
-					"targets": { "node": "current" },
-					"commonjs": true
-				}]
+				[
+					"babel-preset-trigen",
+					{
+						"targets": {
+							"node": "current"
+						},
+						"commonjs": true
+					}
+				]
 			]
 		}
 	}
