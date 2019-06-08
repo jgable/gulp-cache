@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 DO NOT TOUCH. SAVE IT ON TOP.
 
-## [version] - date
+## [semver] - date
 ### Added
 - ...
 
