@@ -1178,7 +1178,7 @@
     husky "^2.3.0"
     lint-staged "^8.1.0"
 
-"@trigen/scripts@^2.2.0":
+"@trigen/scripts@2", "@trigen/scripts@^2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@trigen/scripts/-/scripts-2.2.0.tgz#bcb08a2c0813c987bfa1aaf53d1a56111e24cb21"
   integrity sha512-laVw2M0ezhYWlBZqbraOOqV7HbVpKQ1pvIuIxAix4Fvj4Pd8aVzVtpIJO0D5f1oiRaRJrccBiLES4f54FjlMWg==
