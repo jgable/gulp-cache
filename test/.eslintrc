@@ -1,9 +1,12 @@
 {
-	"plugins": ["jest"],
+	"plugins": [
+		"jest"
+	],
 	"env": {
 		"jest/globals": true
 	},
 	"rules": {
+		"no-magic-numbers": "off",
 		"max-nested-callbacks": "off"
 	}
 }

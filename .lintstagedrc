@@ -1,3 +1,6 @@
 {
-	"src/**/*.js": ["eslint --cache", "git add"]
+	"src/**/*.{js,jsx}": [
+		"trigen-scripts lint:js",
+		"git add"
+	]
 }

@@ -1,0 +1,8 @@
+[
+	"@trigen/scripts-plugin-babel",
+	"@trigen/scripts-plugin-eslint",
+	"@trigen/scripts-plugin-jest",
+	"@trigen/scripts-plugin-rollup",
+	"@trigen/scripts-preset-lib",
+	"@trigen/scripts-plugin-size-limit"
+]
