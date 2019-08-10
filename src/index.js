@@ -17,13 +17,13 @@ function defaultRestore(restored) {
 	if (restored.contents) {
 		// Handle node 0.11 buffer to JSON as object with { type: 'buffer', data: [...] }
 		if (restored && restored.contents && Array.isArray(restored.contents.data)) {
-			restored.contents = new Buffer(restored.contents.data);
+			restored.contents = Buffer.from(restored.contents.data);
 		} else
 		if (Array.isArray(restored.contents)) {
-			restored.contents = new Buffer(restored.contents);
+			restored.contents = Buffer.from(restored.contents);
 		} else
 		if (typeof restored.contents === 'string') {
-			restored.contents = new Buffer(restored.contents, 'base64');
+			restored.contents = Buffer.from(restored.contents, 'base64');
 		}
 	}
 
