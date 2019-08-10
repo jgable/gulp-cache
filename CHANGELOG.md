@@ -24,6 +24,11 @@ DO NOT TOUCH. SAVE IT ON TOP.
 
 -->
 
+## [1.1.3] - 2019-08-10
+### Changed
+- `new Buffer` -> `Buffer.from`;
+- Docs.
+
 ## [1.1.2] - 2019-06-08
 ### Changed
 - `trigen-scripts` as dev tool;

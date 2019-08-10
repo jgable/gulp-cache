@@ -31,11 +31,92 @@ npm i -D gulp-cache
 yarn add -D gulp-cache
 ```
 
+## Usage
+
+```js
+import gulp from 'gulp';
+import favicons from 'gulp-favicons';
+import srcset from 'gulp-srcset';
+import cache from 'gulp-cache';
+
+gulp.task('favicon', () =>
+    gulp.src('src/favicon.svg')
+        .pipe(cache(
+            // Target plugin, the output of which will be cached.
+            favicons(faviconsConfig),
+            // Options for `gulp-cache` plugin.
+            {
+                // Bucket to store favicons in cache.
+                name: 'favicons'
+            }
+        ))
+        .pipe(gulp.dest('./favicons'))
+);
+
+gulp.task('images', () =>
+    gulp.src('src/**/*.{jpg,png,svg}')
+        .pipe(cache(
+            // Target plugin, the output of which will be cached.
+            srcset(srcsetRules),
+            // Options for `gulp-cache` plugin.
+            {
+                // Bucket to store images in cache.
+                name: 'images'
+            }
+        ))
+        .pipe(gulp.dest('./images'))
+);
+```
+
+<details>
+    <summary>Complex usage example</summary>
+
+```js
+import fs from 'fs';
+import gulp from 'gulp';
+import jshint from 'gulp-jshint';
+import cache from 'gulp-cache';
+
+const jsHintVersion = '2.4.1';
+const jshintOptions = fs.readFileSync('.jshintrc');
+
+function makeHashKey(file) {
+    // Key off the file contents, jshint version and options
+    return `${file.contents.toString('utf8')}${jshintVersion}${jshintOptions}`;
+}
+
+gulp.task('lint', () =>
+    gulp.src('src/**/*.js')
+        .pipe(cache(
+            // Target plugin, the output of which will be cached.
+            jshint('.jshintrc'),
+            // Options for `gulp-cache` plugin.
+            {
+                key: makeHashKey,
+                // What on the result indicates it was successful
+                success(jshintedFile) {
+                    return jshintedFile.jshint.success;
+                },
+                // What to store as the result of the successful action
+                value(jshintedFile) {
+                    // Will be extended onto the file object on a cache hit next time task is ran
+                    return {
+                        jshint: jshintedFile.jshint
+                    };
+                }
+            }
+        ))
+        .pipe(jshint.reporter('default'))
+});
+```
+
+</details>
+
 ## API
 
-### `gulpCachePlugin(gulpPluginToCache, options?)`
+### `cache(pluginToCache [, options])`
 
-#### `gulpPluginToCache`
+#### `pluginToCache`
 
 Target plugin, the output of which will be cached.
 
@@ -86,86 +167,6 @@ Options for `gulp-cache` plugin.
 - The result of this method is run through `JSON.stringify` and stored in a temp file for later retrieval.
 
 - Defaults to `'contents'` which will grab the resulting file.contents and store them as a string.
-
-## Usage examples
-
-### Simple
-
-```js
-import gulp from 'gulp';
-import favicons from 'gulp-favicons';
-import srcset from 'gulp-srcset';
-import cache from 'gulp-cache';
-
-gulp.task('favicon', () =>
-    gulp.src('src/favicon.svg')
-        .pipe(cache(
-            // Target plugin, the output of which will be cached.
-            favicons(faviconsConfig),
-            // Options for `gulp-cache` plugin.
-            {
-                // Bucket to store favicons in cache.
-                name: 'favicons'
-            }
-        ))
-        .pipe(gulp.dest('./favicons'))
-);
-
-gulp.task('images', () =>
-    gulp.src('src/**/*.{jpg,png,svg}')
-        .pipe(cache(
-            // Target plugin, the output of which will be cached.
-            srcset(srcsetRules),
-            // Options for `gulp-cache` plugin.
-            {
-                // Bucket to store images in cache.
-                name: 'images'
-            }
-        ))
-        .pipe(gulp.dest('./images'))
-);
-```
-
-### Complex
-
-```js
-import fs from 'fs';
-import gulp from 'gulp';
-import jshint from 'gulp-jshint';
-import cache from 'gulp-cache';
-
-const jsHintVersion = '2.4.1';
-const jshintOptions = fs.readFileSync('.jshintrc');
-
-function makeHashKey(file) {
-    // Key off the file contents, jshint version and options
-    return `${file.contents.toString('utf8')}${jshintVersion}${jshintOptions}`;
-}
-
-gulp.task('lint', () =>
-    gulp.src('src/**/*.js')
-        .pipe(cache(
-            // Target plugin, the output of which will be cached.
-            jshint('.jshintrc'),
-            // Options for `gulp-cache` plugin.
-            {
-                key: makeHashKey,
-                // What on the result indicates it was successful
-                success(jshintedFile) {
-                    return jshintedFile.jshint.success;
-                },
-                // What to store as the result of the successful action
-                value(jshintedFile) {
-                    // Will be extended onto the file object on a cache hit next time task is ran
-                    return {
-                        jshint: jshintedFile.jshint
-                    };
-                }
-            }
-        ))
-        .pipe(jshint.reporter('default'))
-});
-```
 
 ## Clearing the cache
 
